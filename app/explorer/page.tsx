@@ -33,7 +33,7 @@ export default function ExplorerPage() {
         <li>
           📊
           <span className="ml-2">
-            Click "Show Graph" to view the network visualization alongside the chat.
+            Click Show Graph to view the network visualization alongside the chat.
           </span>
         </li>
         <li className="text-l">

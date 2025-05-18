@@ -2,6 +2,7 @@ import "./globals.css";
 import { Public_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import Link from "next/link";
 
 const publicSans = Public_Sans({ subsets: ["latin"] });
 
@@ -56,13 +57,13 @@ export default function RootLayout({
           <div className="bg-secondary grid grid-rows-[auto,1fr] h-[100dvh]">
             <div className="grid grid-cols-[1fr,auto] gap-2 p-4">
               <div className="flex items-center">
-                <a
+                <Link
                   href="/"
                   className="flex items-center gap-2"
                 >
                   <Logo />
                   <span className="font-semibold ml-2">YC Network Explorer</span>
-                </a>
+                </Link>
               </div>
             </div>
             <div className="bg-background mx-4 relative grid rounded-t-2xl border border-input border-b-0">

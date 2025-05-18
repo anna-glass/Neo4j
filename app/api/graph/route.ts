@@ -1,32 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import neo4j from "neo4j-driver";
+import type { NvlNode, NvlRelationship, GraphData } from '../../types/graph';
 
 export const runtime = "edge";
-
-// Types for org chart nodes and edges
-interface NodeProperties {
-  id: string;
-  name?: string;
-  profilePic?: string;
-  title?: string;
-  [key: string]: any;
-}
-
-interface Node {
-  id: string;
-  label: string;
-  image: string | null;
-  title: string;
-  properties: NodeProperties;
-}
-
-interface Edge {
-  from: string;
-  to: string;
-  label: string;
-  arrows: string;
-  companies?: string[];
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -56,44 +32,43 @@ export async function GET(req: NextRequest) {
         RETURN f1 AS person1, f2 AS person2, apoc.create.vRelationship(f1, 'COFOUNDER_AT', {companies: shared_companies}, f2) AS rel
       `);
 
-      const nodesMap: Map<string, Node> = new Map();
-      const edges: Edge[] = [];
+      const nodesMap = new Map<string, NvlNode>();
+      const relationships: NvlRelationship[] = [];
 
-      result.records.forEach(record => {
-        const person1 = record.get('person1').properties as NodeProperties;
-        const person2 = record.get('person2').properties as NodeProperties;
-        const rel = record.get('rel').properties;
-        const relType = record.get('rel').type;
-        const companies = rel.companies || [];
-
+      result.records.forEach((record, index) => {
+        const person1 = record.get('person1');
+        const person2 = record.get('person2');
+        const rel = record.get('rel');
+        const relType = rel.type;
+        const companies = rel.properties.companies || [];
+        
         // Add person1 node if not already present
-        if (!nodesMap.has(person1.id)) {
-          nodesMap.set(person1.id, {
-            id: person1.id,
-            label: person1.name || person1.id,
-            image: person1.profilePic || null,
-            title: person1.title || "",
-            properties: person1
+        if (!nodesMap.has(person1.elementId)) {
+          nodesMap.set(person1.elementId, {
+            id: person1.elementId,
+            labels: person1.labels,
+            properties: person1.properties
           });
         }
+        
         // Add person2 node if not already present
-        if (!nodesMap.has(person2.id)) {
-          nodesMap.set(person2.id, {
-            id: person2.id,
-            label: person2.name || person2.id,
-            image: person2.profilePic || null,
-            title: person2.title || "",
-            properties: person2
+        if (!nodesMap.has(person2.elementId)) {
+          nodesMap.set(person2.elementId, {
+            id: person2.elementId,
+            labels: person2.labels,
+            properties: person2.properties
           });
         }
 
-        // Add edge
-        edges.push({
-          from: person1.id,
-          to: person2.id,
-          label: relType,
-          arrows: "to",
-          companies: companies
+        // Add relationship
+        relationships.push({
+          id: `rel-${index}`,
+          from: person1.elementId,
+          to: person2.elementId,
+          type: relType,
+          properties: {
+            companies: companies
+          }
         });
       });
 
@@ -103,7 +78,7 @@ export async function GET(req: NextRequest) {
       // Convert nodesMap to array
       const nodes = Array.from(nodesMap.values());
 
-      return NextResponse.json({ nodes, edges });
+      return NextResponse.json({ nodes, relationships });
     } catch (error) {
       console.error("Neo4j query error:", error);
       await session.close();

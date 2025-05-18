@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
-import { createClient } from "@supabase/supabase-js";
-
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
+import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import { Document } from "@langchain/core/documents";
 import { RunnableSequence } from "@langchain/core/runnables";
 import {
@@ -61,12 +59,6 @@ Question: {question}
 `;
 const answerPrompt = PromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
-/**
- * This handler initializes and calls a retrieval chain. It composes the chain using
- * LangChain Expression Language. See the docs for more information:
- *
- * https://js.langchain.com/v0.2/docs/how_to/qa_chat_history_how_to/
- */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -79,25 +71,23 @@ export async function POST(req: NextRequest) {
       temperature: 0.2,
     });
 
-    const client = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PRIVATE_KEY!,
-    );
-    const vectorstore = new SupabaseVectorStore(new OpenAIEmbeddings(), {
-      client,
-      tableName: "documents",
-      queryName: "match_documents",
-    });
+    // --- Neo4j vector store setup ---
+    const neo4jUrl = process.env.NEO4J_URL!;
+    const neo4jUsername = process.env.NEO4J_USERNAME!;
+    const neo4jPassword = process.env.NEO4J_PASSWORD!;
+    const indexName = process.env.NEO4J_VECTOR_INDEX || "documents"; // customize as needed
 
-    /**
-     * We use LangChain Expression Language to compose two chains.
-     * To learn more, see the guide here:
-     *
-     * https://js.langchain.com/docs/guides/expression_language/cookbook
-     *
-     * You can also use the "createRetrievalChain" method with a
-     * "historyAwareRetriever" to get something prebaked.
-     */
+    const vectorstore = await Neo4jVectorStore.fromExistingIndex(
+      new OpenAIEmbeddings(),
+      {
+        url: neo4jUrl,
+        username: neo4jUsername,
+        password: neo4jPassword,
+        indexName,
+      }
+    );
+    // --- End Neo4j setup ---
+
     const standaloneQuestionChain = RunnableSequence.from([
       condenseQuestionPrompt,
       model,

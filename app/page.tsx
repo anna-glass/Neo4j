@@ -1,63 +1,37 @@
-import { ChatWindow } from "@/components/ChatWindow";
-import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
+"use client"
+
+import { useState } from "react";
+import { FileUploadForm } from "@/components/FileUploadForm";
 
 export default function Home() {
-  const InfoCard = (
-    <GuideInfoBox>
-      <ul>
-        <li className="text-l">
-          🤝
-          <span className="ml-2">
-            This template showcases a simple chatbot using{" "}
-            <a href="https://js.langchain.com/" target="_blank">
-              LangChain.js
-            </a>{" "}
-            and the Vercel{" "}
-            <a href="https://sdk.vercel.ai/docs" target="_blank">
-              AI SDK
-            </a>{" "}
-            in a{" "}
-            <a href="https://nextjs.org/" target="_blank">
-              Next.js
-            </a>{" "}
-            project.
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          💻
-          <span className="ml-2">
-            You can find the prompt and model logic for this use-case in{" "}
-            <code>app/api/chat/route.ts</code>.
-          </span>
-        </li>
-        <li>
-          🏴‍☠️
-          <span className="ml-2">
-            By default, the bot is pretending to be a pirate, but you can change
-            the prompt to whatever you want!
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          🎨
-          <span className="ml-2">
-            The main frontend logic is found in <code>app/page.tsx</code>.
-          </span>
-        </li>
-        <li className="text-l">
-          👇
-          <span className="ml-2">
-            Try asking e.g. <code>What is it like to be a pirate?</code> below!
-          </span>
-        </li>
-      </ul>
-    </GuideInfoBox>
-  );
+  const [type, setType] = useState("Founder");
+
   return (
-    <ChatWindow
-      endpoint="api/chat"
-      emoji="🏴‍☠️"
-      placeholder="I'm an LLM pretending to be a pirate! Ask me about the pirate life!"
-      emptyStateComponent={InfoCard}
-    />
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="w-full max-w-5xl">
+        <h1 className="text-4xl font-bold text-center mb-8">Database Ingest Tool</h1>
+        <p className="text-center mb-10 text-gray-600">
+          Upload a CSV file and insert it into the Neo4j vector database
+        </p>
+        <div className="mb-6 flex flex-col items-center">
+          <label htmlFor="type" className="mb-2 font-semibold">
+            Select Data Type:
+          </label>
+          <select
+            id="type"
+            name="type"
+            value={type}
+            onChange={e => setType(e.target.value)}
+            className="border rounded px-3 py-2"
+          >
+            <option value="YoutubeVideo">YoutubeVideo</option>
+            <option value="Company">Company</option>
+            <option value="Founder">Founder</option>
+            <option value="Partner">Partner</option>
+          </select>
+        </div>
+        <FileUploadForm selectedType={type} />
+      </div>
+    </main>
   );
 }

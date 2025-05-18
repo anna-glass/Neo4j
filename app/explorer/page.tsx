@@ -21,7 +21,7 @@ export default function ExplorerPage() {
         <li className="text-l">
           🔍
           <span className="ml-2">
-            Welcome to the YC Network Explorer! I'm your YC partner guide to the network.
+            Welcome to the YC Network Explorer! I am your YC partner guide to the network.
           </span>
         </li>
         <li>
@@ -33,7 +33,7 @@ export default function ExplorerPage() {
         <li>
           📊
           <span className="ml-2">
-            Click "Show Graph" to visualize network relationships as we discuss them.
+            Click Show Graph to visualize network relationships as we discuss them.
           </span>
         </li>
         <li className="text-l">

@@ -1,8 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BasicNvlWrapper } from '@neo4j-nvl/react';
+import dynamic from 'next/dynamic';
 import type { GraphData } from '../types/graph';
+
+// Dynamically import the BasicNvlWrapper with SSR disabled
+const BasicNvlWrapper = dynamic(
+  () => import('@neo4j-nvl/react').then((mod) => mod.BasicNvlWrapper),
+  { ssr: false } // This prevents SSR rendering attempts
+);
 
 export default function Network() {
   const [graph, setGraph] = useState<GraphData>({ nodes: [], relationships: [] });

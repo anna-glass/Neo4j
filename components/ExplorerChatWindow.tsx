@@ -10,17 +10,8 @@ import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 import { ChatMessageBubble } from "@/components/ChatMessageBubble";
 import { IntermediateStep } from "./IntermediateStep";
 import { Button } from "./ui/button";
-import { ArrowDown, LoaderCircle, Paperclip } from "lucide-react";
+import { ArrowDown, LoaderCircle } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
-import { UploadDocumentsForm } from "./UploadDocumentsForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
 import { cn } from "@/utils/cn";
 
 function ChatMessages(props: {
@@ -51,7 +42,7 @@ function ChatMessages(props: {
   );
 }
 
-export function ChatInput(props: {
+function ChatInput(props: {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onStop?: () => void;
   value: string;
@@ -147,7 +138,7 @@ function StickyToBottomContent(props: {
   );
 }
 
-export function ChatLayout(props: { content: ReactNode; footer: ReactNode }) {
+function ChatLayout(props: { content: ReactNode; footer: ReactNode }) {
   return (
     <StickToBottom>
       <StickyToBottomContent
@@ -165,12 +156,11 @@ export function ChatLayout(props: { content: ReactNode; footer: ReactNode }) {
   );
 }
 
-export function ChatWindow(props: {
+export function ExplorerChatWindow(props: {
   endpoint: string;
   emptyStateComponent: ReactNode;
   placeholder?: string;
   emoji?: string;
-  showIngestForm?: boolean;
   showIntermediateStepsToggle?: boolean;
 }) {
   const [showIntermediateSteps, setShowIntermediateSteps] = useState(
@@ -309,32 +299,8 @@ export function ChatWindow(props: {
           onChange={chat.handleInputChange}
           onSubmit={sendMessage}
           loading={chat.isLoading || intermediateStepsLoading}
-          placeholder={props.placeholder ?? "What's it like to be a pirate?"}
+          placeholder={props.placeholder ?? "Ask me about YC network connections..."}
         >
-          {props.showIngestForm && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="pl-2 pr-3 -ml-2"
-                  disabled={chat.messages.length !== 0}
-                >
-                  <Paperclip className="size-4" />
-                  <span>Upload document</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Upload document</DialogTitle>
-                  <DialogDescription>
-                    Upload a document to use for the chat.
-                  </DialogDescription>
-                </DialogHeader>
-                <UploadDocumentsForm />
-              </DialogContent>
-            </Dialog>
-          )}
-
           {props.showIntermediateStepsToggle && (
             <div className="flex items-center gap-2">
               <Checkbox
@@ -353,4 +319,4 @@ export function ChatWindow(props: {
       }
     />
   );
-}
+} 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChatWindow } from "@/components/ChatWindow";
+import { ExplorerChatWindow } from "@/components/ExplorerChatWindow";
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
@@ -60,7 +60,7 @@ export default function ExplorerPage() {
       
       <div className="flex flex-col md:flex-row h-full gap-0">
         <div className={`flex-1 transition-all ${showGraph ? 'md:w-1/2' : 'md:w-full'}`}>
-          <ChatWindow
+          <ExplorerChatWindow
             endpoint="api/chat/explorer"
             placeholder="Ask me about YC network connections, founders, or partners..."
             emoji="🚀"

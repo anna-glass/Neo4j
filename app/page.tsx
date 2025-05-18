@@ -1,11 +1,5 @@
 import { Metadata } from 'next';
-import dynamic from 'next/dynamic';
-
-// Since NetworkGraph uses browser APIs, we need to load it dynamically on the client side
-const NetworkGraph = dynamic(() => import('./components/NetworkGraph'), {
-  ssr: false,
-  loading: () => <div className="flex items-center justify-center h-screen">Loading network visualization...</div>
-});
+import NetworkContainer from './components/NetworkContainer';
 
 export const metadata: Metadata = {
   title: 'YC Network - Organization Chart',
@@ -15,7 +9,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen">
-      <NetworkGraph />
+      <NetworkContainer />
     </main>
   );
 }

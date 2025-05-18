@@ -4,22 +4,30 @@ import { convertVercelMessageToLangChainMessage, convertLangChainMessageToVercel
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
-import { SerpAPI } from "@langchain/community/tools/serpapi";
-import { Calculator } from "@langchain/community/tools/calculator";
+import neo4j from "neo4j-driver";
 import {
   AIMessage,
   SystemMessage,
 } from "@langchain/core/messages";
+import { DynamicTool } from "@langchain/core/tools";
 
 export const runtime = "edge";
 
-const AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!`;
+const YC_PARTNER_TEMPLATE = `You are a helpful YC partner with deep knowledge of the YC network. 
+Your goal is to help founders navigate the YC ecosystem by providing insights about:
+- Connections between founders and partners
+- Company relationships
+- Potential mentorship opportunities
+- Network insights
+
+Use the graph database to answer questions with accurate information.
+Be concise but informative, and focus on providing actionable insights.
+If you don't know something, be honest and suggest how the user might find the information elsewhere.
+
+Respond in a professional, supportive manner as a YC partner would.`;
 
 /**
- * This handler initializes and calls an tool caling ReAct agent.
- * See the docs for more information:
- *
- * https://langchain-ai.github.io/langgraphjs/tutorials/quickstart/
+ * This handler initializes and calls an agent with Neo4j graph querying capabilities.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -36,27 +44,66 @@ export async function POST(req: NextRequest) {
       )
       .map(convertVercelMessageToLangChainMessage);
 
-    // Requires process.env.SERPAPI_API_KEY to be set: https://serpapi.com/
-    // You can remove this or use a different tool instead.
-    const tools = [new Calculator(), new SerpAPI()];
+    // Set up Neo4j connection for the Cypher query tool
+    const neo4jUrl = process.env.NEO4J_URL!;
+    const neo4jUsername = process.env.NEO4J_USERNAME!;
+    const neo4jPassword = process.env.NEO4J_PASSWORD!;
+
+    // Create a Cypher query tool
+    const cypherQueryTool = new DynamicTool({
+      name: "cypher_query_tool",
+      description: "Executes Cypher queries against the Neo4j graph database. Use this to retrieve information about the YC Network.",
+      func: async (query: string) => {
+        const driver = neo4j.driver(
+          neo4jUrl,
+          neo4j.auth.basic(neo4jUsername, neo4jPassword)
+        );
+        
+        const session = driver.session();
+        try {
+          // Execute the query
+          const result = await session.run(query);
+          
+          // Format the results
+          const formattedResults = result.records.map(record => {
+            const resultObj: any = {};
+            record.keys.forEach(key => {
+              const value = record.get(key);
+              // Handle Neo4j node objects
+              if (value && value.properties) {
+                resultObj[key] = value.properties;
+              } else {
+                resultObj[key] = value;
+              }
+            });
+            return resultObj;
+          });
+          
+          return JSON.stringify(formattedResults, null, 2);
+        } catch (error: any) {
+          return `Error executing Cypher query: ${error.message}`;
+        } finally {
+          await session.close();
+          await driver.close();
+        }
+      }
+    });
+
+    // Only use the graph database tool
+    const tools = [cypherQueryTool];
+    
     const chat = new ChatOpenAI({
       model: "gpt-4o-mini",
-      temperature: 0,
+      temperature: 0.2,
     });
 
     /**
-     * Use a prebuilt LangGraph agent.
+     * Use a prebuilt LangGraph agent with our custom YC partner prompt.
      */
     const agent = createReactAgent({
       llm: chat,
       tools,
-      /**
-       * Modify the stock prompt in the prebuilt agent. See docs
-       * for how to customize your agent:
-       *
-       * https://langchain-ai.github.io/langgraphjs/tutorials/quickstart/
-       */
-      messageModifier: new SystemMessage(AGENT_SYSTEM_TEMPLATE),
+      messageModifier: new SystemMessage(YC_PARTNER_TEMPLATE),
     });
 
     if (!returnIntermediateSteps) {

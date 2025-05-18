@@ -5,8 +5,6 @@ import { convertVercelMessageToLangChainMessage, convertLangChainMessageToVercel
 // Import necessary LangChain components
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
-import { SerpAPI } from "@langchain/community/tools/serpapi";
-import { Calculator } from "@langchain/community/tools/calculator";
 import neo4j from "neo4j-driver";
 import { SystemMessage } from "@langchain/core/messages";
 import { DynamicTool } from "@langchain/core/tools";
@@ -14,13 +12,12 @@ import { DynamicTool } from "@langchain/core/tools";
 export const runtime = "edge";
 
 // System prompt for the agent
-const SYSTEM_TEMPLATE = `You are a helpful assistant that helps users explore and understand the YC Network graph. 
-
-Here's what you can do:
-1. Answer questions about founders, partners, and companies in the YC Network
-2. Generate appropriate Cypher queries when users want to visualize specific relationships
-3. Explain relationships between entities in the graph
-4. Provide insights about the network structure
+const SYSTEM_TEMPLATE = `You are a helpful YC partner with deep knowledge of the YC network. 
+Your goal is to help founders navigate the YC ecosystem by providing insights about:
+- Connections between founders and partners
+- Company relationships 
+- Potential mentorship opportunities
+- Network insights
 
 When users ask to see or visualize something in the graph, you should:
 1. Generate a Cypher query that answers their question
@@ -35,10 +32,10 @@ The graph has the following structure:
   - Founders can be connected to other Founders via companies they work at together
   - Partners can be connected to Founders via companies they partner with
 
-Be helpful, informative, and precise in your responses.`;
+Be professional, insightful, and concise in your responses as a YC partner would be.`;
 
 /**
- * This handler creates an agent with tools for both internet search and Neo4j graph querying
+ * This handler creates an agent with Neo4j graph querying capabilities
  */
 export async function POST(req: NextRequest) {
   try {
@@ -101,17 +98,13 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // Set up tools for the agent
-    const tools = [
-      new Calculator(), 
-      new SerpAPI(),
-      cypherQueryTool
-    ];
+    // Set up tools for the agent - only using cypherQueryTool
+    const tools = [cypherQueryTool];
     
     // Initialize the chat model
     const chat = new ChatOpenAI({
       model: "gpt-4o-mini",
-      temperature: 0,
+      temperature: 0.2, // Slightly higher for more varied responses
     });
 
     /**

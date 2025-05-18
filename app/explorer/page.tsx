@@ -21,25 +21,25 @@ export default function ExplorerPage() {
         <li className="text-l">
           🔍
           <span className="ml-2">
-            Welcome to the YC Network Explorer! This tool allows you to chat and explore the network graph.
+            Welcome to the YC Network Explorer! I'm your YC partner guide to the network.
           </span>
         </li>
         <li>
           💬
           <span className="ml-2">
-            You can ask questions about the YC network or request specific Cypher queries.
+            Ask me about founder-partner connections, company relationships, or potential mentorship opportunities.
           </span>
         </li>
         <li>
           📊
           <span className="ml-2">
-            Click Show Graph to view the network visualization alongside the chat.
+            Click "Show Graph" to visualize network relationships as we discuss them.
           </span>
         </li>
         <li className="text-l">
           👇
           <span className="ml-2">
-            Try asking e.g. <code>Show me connections between founders and partners</code> below!
+            Try asking: <code>Who are the most connected partners in this network?</code> or <code>Show me founders working on AI companies</code>
           </span>
         </li>
       </ul>
@@ -62,8 +62,8 @@ export default function ExplorerPage() {
         <div className={`flex-1 transition-all ${showGraph ? 'md:w-1/2' : 'md:w-full'}`}>
           <ChatWindow
             endpoint="api/chat/explorer"
-            placeholder="Ask me about the YC network or request a graph query..."
-            emoji="🔍"
+            placeholder="Ask me about YC network connections, founders, or partners..."
+            emoji="🚀"
             showIntermediateStepsToggle={true}
             emptyStateComponent={InfoCard}
           />

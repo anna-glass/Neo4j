@@ -73,7 +73,6 @@ export default function RootLayout({
                 </a>
                 <nav className="flex gap-1 flex-col md:flex-row">
                   <ActiveLink href="/">🔍 Network Explorer</ActiveLink>
-                  <ActiveLink href="/agents">🦜 Agents</ActiveLink>
                   <ActiveLink href="/retrieval_agents">
                     🤖 Retrieval Agents
                   </ActiveLink>

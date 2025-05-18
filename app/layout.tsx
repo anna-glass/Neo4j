@@ -2,6 +2,7 @@ import "./globals.css";
 import { Public_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import Link from "next/link";
 
 const publicSans = Public_Sans({ subsets: ["latin"] });
 
@@ -45,8 +46,22 @@ export default function RootLayout({
               <div className="flex gap-4 flex-col md:flex-row md:items-center">
                 <div className="flex items-center gap-2">
                   <Logo />
-                  <span className="font-semibold">Database Ingest Tool</span>
+                  <span className="font-semibold">Database Tool</span>
                 </div>
+                <nav className="flex gap-4">
+                  <Link 
+                    href="/"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Data Upload
+                  </Link>
+                  <Link 
+                    href="/knowledge-network" 
+                    className="hover:text-primary transition-colors"
+                  >
+                    Knowledge Network
+                  </Link>
+                </nav>
               </div>
             </div>
             <div className="bg-background mx-4 relative grid rounded-t-2xl border border-input border-b-0">

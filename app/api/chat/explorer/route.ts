@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
+import { Message as VercelChatMessage } from "ai";
+import { convertVercelMessageToLangChainMessage, convertLangChainMessageToVercelMessage } from "../../../utils/messageConversion";
 
 // Import necessary LangChain components
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
@@ -7,41 +8,10 @@ import { ChatOpenAI } from "@langchain/openai";
 import { SerpAPI } from "@langchain/community/tools/serpapi";
 import { Calculator } from "@langchain/community/tools/calculator";
 import neo4j from "neo4j-driver";
-import {
-  AIMessage,
-  BaseMessage,
-  ChatMessage,
-  HumanMessage,
-  SystemMessage,
-} from "@langchain/core/messages";
+import { SystemMessage } from "@langchain/core/messages";
 import { DynamicTool } from "@langchain/core/tools";
 
 export const runtime = "edge";
-
-// Helper functions to convert between Vercel and LangChain message formats
-const convertVercelMessageToLangChainMessage = (message: VercelChatMessage) => {
-  if (message.role === "user") {
-    return new HumanMessage(message.content);
-  } else if (message.role === "assistant") {
-    return new AIMessage(message.content);
-  } else {
-    return new ChatMessage(message.content, message.role);
-  }
-};
-
-const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
-  if (message._getType() === "human") {
-    return { content: message.content, role: "user" };
-  } else if (message._getType() === "ai") {
-    return {
-      content: message.content,
-      role: "assistant",
-      tool_calls: (message as AIMessage).tool_calls,
-    };
-  } else {
-    return { content: message.content, role: message._getType() };
-  }
-};
 
 // System prompt for the agent
 const SYSTEM_TEMPLATE = `You are a helpful assistant that helps users explore and understand the YC Network graph. 
@@ -183,7 +153,11 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      return new StreamingTextResponse(transformStream);
+      return new Response(transformStream, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+        },
+      });
     } else {
       /**
        * Return all intermediate steps for debugging

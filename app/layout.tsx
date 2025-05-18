@@ -72,7 +72,7 @@ export default function RootLayout({
                   <Logo />
                 </a>
                 <nav className="flex gap-1 flex-col md:flex-row">
-                  <ActiveLink href="/">🏴‍☠️ Chat</ActiveLink>
+                  <ActiveLink href="/">🔍 Network Graph</ActiveLink>
                   <ActiveLink href="/structured_output">
                     🧱 Structured Output
                   </ActiveLink>

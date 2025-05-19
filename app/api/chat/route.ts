@@ -3,6 +3,7 @@ import { Message as UIMessage } from "ai/react";
 import { UIToLangChainMessage } from "@/lib/convert-message";
 import { ChatOpenAI } from "@langchain/openai";
 import { runCypher, fetchAndCacheSchema } from "@/lib/neo4j";
+import { extractCypherFromResponse } from "@/lib/extract-cypher-from-response";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,23 +27,31 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `
-You are an expert Cypher developer for Neo4j.
-The database schema is:
-${schema}
-
-Write a Cypher query for the following question, and then answer it using the results.
-Question: "${userQuestion}"
-`;
+    You are an expert Cypher developer for Neo4j.
+    The database schema is:
+    ${schema}
+    
+    Write a Cypher query for the following question, and then answer it using the results.
+    Question: "${userQuestion}"
+    `;
 
     // Get Cypher from LLM
     const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
     const cypherResponse = await llm.invoke(prompt);
-    const cypher = cypherResponse.content.toString().trim();
-    console.log("cypher", cypher);
+    const cypherRaw = cypherResponse.content.toString().trim();
+    console.log("Raw LLM response:", cypherRaw);
+    const cypher = extractCypherFromResponse(cypherRaw);
+    console.log("Extracted Cypher:", cypher);
 
     // Run Cypher on Neo4j using your utility
-    const results = await runCypher(cypher);
-    console.log("results", results);
+    let results;
+    try {
+      results = await runCypher(cypher);
+      console.log("results", results);
+    } catch (err) {
+      console.error("Cypher execution error:", err);
+      return NextResponse.json({ error: String(err) }, { status: 500 });
+    }
 
     // Compose answer (very basic for now)
     const answer = JSON.stringify(results, null, 2);
@@ -51,6 +60,7 @@ Question: "${userQuestion}"
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   } catch (e: any) {
+    console.error("API error:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

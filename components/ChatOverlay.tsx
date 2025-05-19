@@ -6,7 +6,7 @@ import { LoaderCircle } from "lucide-react";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Message as UIMessage } from "ai/react";
 
-type ChatMessage = UIMessage & { sources?: any[] };
+type ChatMessage = UIMessage;
 
 export default function ChatOverlay({
   endpoint,
@@ -26,57 +26,33 @@ export default function ChatOverlay({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    const userId = crypto.randomUUID();
-    const userMsg: ChatMessage = { id: userId, role: "user", content: input };
+    const userMsg: ChatMessage = { id: crypto.randomUUID(), role: "user", content: input };
     setMessages((msgs) => [...msgs, userMsg]);
     setLoading(true);
 
-    // Send to your chat API (use the same ID for the user message)
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [...messages, userMsg] }),
-    });
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [...messages, userMsg] }),
+      });
 
-    if (!res.ok) {
-      setLoading(false);
+      if (!res.ok) throw new Error(await res.text());
+
+      const answer = await res.text();
+      setMessages((msgs) => [
+        ...msgs,
+        { id: crypto.randomUUID(), role: "assistant", content: answer },
+      ]);
+    } catch (err: any) {
       setMessages((msgs) => [
         ...msgs,
         { id: crypto.randomUUID(), role: "assistant", content: "Sorry, something went wrong." },
       ]);
-      return;
+    } finally {
+      setInput("");
+      setLoading(false);
     }
-
-    // Generate assistant message ID once
-    const assistantId = crypto.randomUUID();
-    let assistantMsg = "";
-    const reader = res.body?.getReader();
-    if (reader) {
-      // Streaming response
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        assistantMsg += new TextDecoder().decode(value);
-        setMessages((msgs) => {
-          // Remove any previous assistant message with this id, then add/update
-          const msgsWithoutAssistant = msgs.filter((m) => m.id !== assistantId);
-          return [
-            ...msgsWithoutAssistant,
-            { id: assistantId, role: "assistant", content: assistantMsg },
-          ];
-        });
-      }
-    } else {
-      // Non-streaming response
-      const data = await res.text();
-      assistantMsg = data;
-      setMessages((msgs) => [
-        ...msgs,
-        { id: assistantId, role: "assistant", content: assistantMsg },
-      ]);
-    }
-    setInput("");
-    setLoading(false);
   };
 
   return (
@@ -89,7 +65,7 @@ export default function ChatOverlay({
                 key={msg.id}
                 message={msg}
                 aiEmoji={emoji}
-                sources={msg.sources || []}
+                sources={[]}
               />
             ))}
       </div>

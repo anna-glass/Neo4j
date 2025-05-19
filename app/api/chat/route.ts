@@ -1,52 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as UIMessage } from "ai/react";
 import { UIToLangChainMessage } from "@/lib/convert-message";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
-import { SystemMessage } from "@langchain/core/messages";
-import { SYSTEM_TEMPLATE } from "../../../constants/system-template";
-import { cypherQueryTool } from "../../../lib/cypher-query-tool";
-import { streamAgentEvents } from "../../../lib/stream-agent-events";
+import { Neo4jGraph } from "@langchain/community/graphs/neo4j_graph";
 
 export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
-    // Only user/assistant messages, convert to langchain
     const messages = (body.messages ?? [])
-      .filter(
-        (m: UIMessage) =>
-          m.role === "user" || m.role === "assistant"
-      )
+      .filter((m: UIMessage) => m.role === "user" || m.role === "assistant")
       .map(UIToLangChainMessage);
 
-    const chat = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0.3,
+    const userQuestion = messages[messages.length - 1]?.content ?? "";
+
+    // Initialize Neo4j graph connection
+    const graph = await Neo4jGraph.initialize({
+      url: process.env.NEO4J_URL!,
+      username: process.env.NEO4J_USERNAME!,
+      password: process.env.NEO4J_PASSWORD!,
     });
 
-    // create langchain agent
-    const agent = createReactAgent({
-      llm: chat,
-      tools: [cypherQueryTool],
-      messageModifier: new SystemMessage(SYSTEM_TEMPLATE),
-    });
+    // Get schema for prompt context
+    const schema = await graph.getSchema();
 
-    const eventStream = await agent.streamEvents(
-      { messages },
-      { version: "v2" }
-    );
+    // Compose prompt for Cypher generation
+    const prompt = `
+    You are an expert Cypher developer. Given this Neo4j schema:
 
-    const agentEventStream = await streamAgentEvents(eventStream);
+    ${schema}
 
-    return new Response(agentEventStream, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-      },
+    Write a Cypher query for the following question, then answer it using the results:
+    "${userQuestion}"
+    `;
+
+    // Get Cypher from LLM
+    const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
+    const cypherResponse = await llm.invoke(prompt);
+    const cypher = cypherResponse.content.toString().trim();
+
+    // Run Cypher on Neo4j
+    const results = await graph.query(cypher);
+
+    // Compose answer (very basic for now)
+    const answer = JSON.stringify(results, null, 2);
+
+    return new Response(answer, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: e.status });
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

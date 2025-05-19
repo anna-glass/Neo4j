@@ -50,9 +50,6 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
     setSelectedNode(node);
   }, []);
 
-  console.log("nodes", nodes);
-  console.log("edges", edges);
-
   return (
     <>
       <ReactFlow

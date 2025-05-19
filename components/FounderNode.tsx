@@ -3,42 +3,41 @@ import { NodeProps } from 'reactflow';
 export default function FounderNode({ data, selected }: NodeProps) {
   return (
     <div
-      className={`flex flex-col items-center justify-center
-        ${selected ? 'ring-4 ring-blue-400' : ''}
+      className={`flex flex-col items-center justify-center bg-white
+        rounded-xl shadow-md
+        ${selected ? 'ring-2 ring-blue-300' : ''}
       `}
       style={{
-        width: 80,
-        height: 80,
-        borderRadius: '50%',
-        background: '#fff',
-        border: '3px solid #7fdbff', // Neo4j blue
-        boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+        width: 54,
+        height: 54,
+        padding: 0,
         cursor: 'pointer',
         transition: 'box-shadow 0.2s',
+        position: 'relative',
       }}
     >
       <img
         src={data.image}
         alt={data.name}
         style={{
-          width: 54,
-          height: 54,
-          borderRadius: '50%',
+          width: 24,
+          height: 24,
+          borderRadius: 6,
           objectFit: 'cover',
-          border: '2px solid #b2f0ff',
+          marginBottom: 2,
         }}
       />
       <div
         style={{
-          fontSize: 12,
-          fontWeight: 600,
-          marginTop: 4,
-          textAlign: 'center',
+          fontSize: 8,
+          fontWeight: 500,
           color: '#222',
-          maxWidth: 70,
+          textAlign: 'center',
+          maxWidth: 48,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
+          lineHeight: 1.1,
         }}
       >
         {data.name}

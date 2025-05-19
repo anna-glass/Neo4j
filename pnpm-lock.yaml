@@ -65,6 +65,9 @@ dependencies:
   clsx:
     specifier: ^2.1.1
     version: 2.1.1
+  dagre:
+    specifier: ^0.8.5
+    version: 0.8.5
   langchain:
     specifier: ^0.3.26
     version: 0.3.26(@langchain/core@0.3.56)(axios@1.9.0)(openai@4.100.0)
@@ -124,6 +127,9 @@ devDependencies:
   '@next/bundle-analyzer':
     specifier: ^13.4.19
     version: 13.5.11
+  '@types/dagre':
+    specifier: ^0.7.52
+    version: 0.7.52
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.27)
@@ -2380,6 +2386,10 @@ packages:
       '@types/d3-zoom': 3.0.8
     dev: false
 
+  /@types/dagre@0.7.52:
+    resolution: {integrity: sha512-XKJdy+OClLk3hketHi9Qg6gTfe1F3y+UFnHxKA2rn9Dw+oXa4Gb378Ztz9HlMgZKSxpPmn4BNVh9wgkpvrK1uw==}
+    dev: true
+
   /@types/debug@4.1.12:
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
     dependencies:
@@ -3471,6 +3481,13 @@ packages:
       d3-interpolate: 3.0.1
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
+    dev: false
+
+  /dagre@0.8.5:
+    resolution: {integrity: sha512-/aTqmnRta7x7MCCpExk7HQL2O4owCT2h8NT//9I1OQ9vt29Pa0BzSAkR5lwFUcQ7491yVi/3CXU9jQ5o0Mn2Sw==}
+    dependencies:
+      graphlib: 2.1.8
+      lodash: 4.17.21
     dev: false
 
   /damerau-levenshtein@1.0.8:

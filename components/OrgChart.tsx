@@ -13,6 +13,7 @@ import 'reactflow/dist/style.css';
 
 import FounderNode from './FounderNode';
 import PartnerNode from './PartnerNode';
+import { getLayoutedElements } from '@/utils/node-layout';
 
 const nodeTypes = {
   founder: FounderNode,
@@ -25,18 +26,26 @@ interface OrgChartProps {
 }
 
 export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) {
-  // Use state hooks
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  // Layout nodes and edges on mount or when data changes
+  const [{ nodes: layoutedNodes, edges: layoutedEdges }, setLayouted] = useState(() =>
+    getLayoutedElements(initialNodes, initialEdges, 'TB')
+  );
+
+  useEffect(() => {
+    setLayouted(getLayoutedElements(initialNodes, initialEdges, 'TB'));
+  }, [initialNodes, initialEdges]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  // Sync with props if they change (e.g. after fetch)
+  // Sync nodes/edges state with layouted nodes/edges
   useEffect(() => {
-    setNodes(initialNodes);
-  }, [initialNodes, setNodes]);
+    setNodes(layoutedNodes);
+  }, [layoutedNodes, setNodes]);
   useEffect(() => {
-    setEdges(initialEdges);
-  }, [initialEdges, setEdges]);
+    setEdges(layoutedEdges);
+  }, [layoutedEdges, setEdges]);
 
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedNode(node);
@@ -57,7 +66,7 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
       >
-        <Background />
+        <Background color="#eaf6fb" gap={20} />
         <Controls />
       </ReactFlow>
       {selectedNode && (

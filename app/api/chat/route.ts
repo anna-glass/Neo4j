@@ -33,6 +33,11 @@ export async function POST(req: NextRequest) {
     The database schema is:
     ${schema}
     
+    Guidelines:
+    - Only use node labels, relationship types, and properties that are present in the schema above.
+    - If the question cannot be answered using ONLY the schema, respond with a Cypher comment: // Cannot answer with current schema.
+    - Do NOT guess or invent any labels, relationships, or properties.
+    
     Write a Cypher query for the following question, and then answer it using the results.
     Question: "${userQuestion}"
     `;

@@ -1,5 +1,5 @@
 export const CYPHER = `
-MATCH (f:Founder)-[:EMPLOYEES_AT]->(c:Company)-[:HAS_PARTNER]->(p:Partner)
+MATCH (f:Founder)-[:FOUNDER_OF]->(c:Company)-[:HAS_PARTNER]->(p:Partner)
 WITH f, p, collect(c.name) AS shared_companies
 RETURN 
   apoc.map.merge(properties(f), {labels: labels(f), elementId: elementId(f)}) AS person1, 
@@ -8,7 +8,7 @@ RETURN
 
 UNION ALL
 
-MATCH (f1:Founder)-[:EMPLOYEES_AT]->(c:Company)<-[:EMPLOYEES_AT]-(f2:Founder)
+MATCH (f1:Founder)-[:FOUNDER_OF]->(c:Company)<-[:FOUNDER_OF]-(f2:Founder)
 WHERE elementId(f1) < elementId(f2)
 WITH f1, f2, collect(c.name) AS shared_companies
 RETURN 

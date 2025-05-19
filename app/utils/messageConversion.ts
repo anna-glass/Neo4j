@@ -6,13 +6,9 @@ import {
   HumanMessage,
   isAIMessage,
   isHumanMessage,
-  isBaseMessage,
-  SystemMessage,
 } from "@langchain/core/messages";
 
-/**
- * Converts a Vercel AI SDK message to a LangChain message
- */
+// convert Vercel message to LangChain message
 export const convertVercelMessageToLangChainMessage = (message: VercelChatMessage) => {
   if (message.role === "user") {
     return new HumanMessage(message.content);
@@ -23,9 +19,7 @@ export const convertVercelMessageToLangChainMessage = (message: VercelChatMessag
   }
 };
 
-/**
- * Converts a LangChain message to a Vercel AI SDK message
- */
+// convert LangChain message to Vercel message
 export const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
   if (isHumanMessage(message)) {
     return { content: message.content, role: "user" };
@@ -37,7 +31,6 @@ export const convertLangChainMessageToVercelMessage = (message: BaseMessage) => 
       tool_calls: aiMessage.tool_calls,
     };
   } else {
-    // For other message types, use as BaseMessage
     const baseMsg = message as BaseMessage;
     return { 
       content: baseMsg.content, 

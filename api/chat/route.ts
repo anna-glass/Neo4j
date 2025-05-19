@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage } from "ai";
-import { convertVercelMessageToLangChainMessage } from "../../utils/messageConversion";
+import { convertVercelMessageToLangChainMessage } from "../../app/utils/messageConversion";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { SystemMessage } from "@langchain/core/messages";
-import { SYSTEM_TEMPLATE } from "../../../constants/system-template";
-import { cypherQueryTool } from "../../../lib/cypher-query-tool";
-import { streamAgentEvents } from "../../../lib/stream-agent-events";
+import { SYSTEM_TEMPLATE } from "../../constants/system-template";
+import { cypherQueryTool } from "../../lib/cypher-query-tool";
+import { streamAgentEvents } from "../../lib/stream-agent-events";
 
 export const runtime = "edge";
 

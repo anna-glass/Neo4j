@@ -26,42 +26,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("schema", schema);
-
     const prompt = `
-    You are an expert Cypher developer for Neo4j.
-    The database schema is:
-    ${schema}
-    
-    Guidelines:
-    - Only use node labels, relationship types, and properties that are present in the schema above.
-    - If the question cannot be answered using ONLY the schema, respond with a Cypher comment: // Cannot answer with current schema.
-    - Do NOT guess or invent any labels, relationships, or properties.
-    
-    Write a Cypher query for the following question, and then answer it using the results.
-    Question: "${userQuestion}"
-    `;
+You are an expert Cypher developer for Neo4j.
+The database schema is:
+${schema}
+
+Guidelines:
+- Only use node labels, relationship types, and properties that are present in the schema above.
+- If the question cannot be answered using ONLY the schema, respond with a Cypher comment: // Cannot answer with current schema.
+- Do NOT guess or invent any labels, relationships, or properties.
+
+Write a Cypher query for the following question, and output it as a \`\`\`cypher code block, with NO explanation or commentary.
+Question: "${userQuestion}"
+`;
 
     // Get Cypher from LLM
     const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
     const cypherResponse = await llm.invoke(prompt);
     const cypherRaw = cypherResponse.content.toString().trim();
-    console.log("Raw LLM response:", cypherRaw);
     const cypher = extractCypherFromResponse(cypherRaw);
-    console.log("Extracted Cypher:", cypher);
 
     // Run Cypher on Neo4j using your utility
     let results;
     try {
       results = await runCypher(cypher);
-      console.log("results", results);
     } catch (err) {
       console.error("Cypher execution error:", err);
       return NextResponse.json({ error: String(err) }, { status: 500 });
     }
 
-    // Compose answer (very basic for now)
-    const answer = JSON.stringify(results, null, 2);
+    // Compose a reasoning prompt for the LLM
+    const reasoningPrompt = `
+You are an assistant answering questions about an organizational chart, based on Neo4j database results.
+
+User question:
+${userQuestion}
+
+Cypher query:
+${cypher}
+
+Raw database result (as JSON):
+${JSON.stringify(results, null, 2)}
+
+Please answer the user's question in clear, natural language, summarizing the result. If the result is empty, politely explain that no data was found.
+`;
+
+    // Get the final answer from the LLM
+    const answerResponse = await llm.invoke(reasoningPrompt);
+    const answer = answerResponse.content.toString().trim();
 
     return new Response(answer, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },

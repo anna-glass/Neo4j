@@ -11,12 +11,10 @@ type ChatMessage = {
 
 export default function ChatOverlay({
   endpoint,
-  placeholder = "Ask about the org chart...",
-  emoji = "🍵",
+  placeholder = "Ask me anything about the YC network..."
 }: {
   endpoint: string;
   placeholder?: string;
-  emoji?: string;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -68,10 +66,6 @@ export default function ChatOverlay({
           boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
         }}
       >
-        <div className="flex items-center mb-2">
-          <span className="text-2xl mr-2">{emoji}</span>
-          <span className="font-semibold text-gray-800">Ask the Org Chart</span>
-        </div>
         {lastAssistantMsg && (
           <div className="w-full mb-3">
             <div className="bg-white/60 rounded-xl px-4 py-2 text-gray-900 shadow-inner border border-white/20">

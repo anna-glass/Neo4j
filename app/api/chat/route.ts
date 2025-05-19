@@ -12,14 +12,11 @@ export async function POST(req: NextRequest) {
       .map(UIToLangChainMessage);
 
     const userQuestion = messages[messages.length - 1]?.content ?? "";
-    console.log("userQuestion", userQuestion);
 
     // Fetch and cache schema for prompt context
     let schema: string;
     try {
-      console.log("fetching schema");
       schema = await fetchAndCacheSchema();
-      console.log("schema fetched");
     } catch (schemaError) {
       console.error("Error fetching schema:", schemaError);
       return NextResponse.json(
@@ -27,7 +24,6 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    console.log("schema", schema);
 
     const prompt = `
 You are an expert Cypher developer for Neo4j.
@@ -42,6 +38,7 @@ Question: "${userQuestion}"
     const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
     const cypherResponse = await llm.invoke(prompt);
     const cypher = cypherResponse.content.toString().trim();
+    console.log("cypher", cypher);
 
     // Run Cypher on Neo4j using your utility
     const results = await runCypher(cypher);

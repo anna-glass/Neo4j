@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log("schema", schema);
+
     const prompt = `
     You are an expert Cypher developer for Neo4j.
     The database schema is:

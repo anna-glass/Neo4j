@@ -4,8 +4,6 @@ import { UIToLangChainMessage } from "@/lib/convert-message";
 import { ChatOpenAI } from "@langchain/openai";
 import { runCypher, fetchAndCacheSchema } from "@/lib/neo4j";
 
-export const runtime = "edge";
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

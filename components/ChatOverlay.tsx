@@ -1,5 +1,7 @@
+'use client'
+
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "./button";
 import { LoaderCircle } from "lucide-react";
 import { ChatMessageBubble } from "./ChatMessageBubble"; 
 import type { Message } from "ai/react";

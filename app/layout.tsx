@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Public_Sans } from "next/font/google";
-import { Toaster } from "@/components/toaster";
+import { Toaster } from "@/components/Toaster";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Link from "next/link";
 

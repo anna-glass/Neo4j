@@ -31,15 +31,16 @@ export async function GET(req: NextRequest) {
       }
 
       return {
-        id: `e${row.person1.elementId}-${row.person2.elementId}-${i}`,
-        source: row.person1.elementId,
-        target: row.person2.elementId,
+        id: row.rel.elementId,
+        source: row.rel.startNodeElementId,
+        target: row.rel.endNodeElementId,
         label: row.rel.type,
         data: {
           companies: row.rel.properties.companies,
         },
         type: "smoothstep",
       };
+      
     });
 
     const nodes = Array.from(nodesMap.values());

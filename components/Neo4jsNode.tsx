@@ -32,7 +32,7 @@ export default function PartnerNode({ data, selected }: NodeProps) {
         style={{
           width: imageSize,
           height: imageSize,
-          borderRadius: nodeSize * 0.2,
+          borderRadius: nodeSize * 0.1,
           objectFit: 'cover',
           marginBottom: 4,
         }}

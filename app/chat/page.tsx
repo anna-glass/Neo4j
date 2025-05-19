@@ -1,6 +1,6 @@
 'use client';
 
-import { ExplorerChatWindow } from "@/components/ExplorerChatWindow";
+import ChatOverlay from "@/components/ChatOverlay";
 import { StickToBottom } from "use-stick-to-bottom";
 
 export default function ChatPage() {
@@ -17,7 +17,7 @@ export default function ChatPage() {
       <div className="flex flex-1 flex-col md:flex-row h-full min-h-[600px]">
         <div className="flex-1 md:w-1/2 h-full overflow-auto">
           <StickToBottom>
-            <ExplorerChatWindow
+            <ChatOverlay
               endpoint="api/chat/"
               placeholder="Ask about YC network connections, founders, or partners..."
               emoji="🍵"

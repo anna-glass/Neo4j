@@ -1,12 +1,16 @@
 import neo4j, { Driver, Session } from 'neo4j-driver';
 
+let cachedSchema: string | null = null;
+let lastSchemaFetch = 0;
+const SCHEMA_CACHE_TTL = 1000 * 60 * 10;
+
 // serverless means we need to create a new driver per request
 function getDriver(): Driver {
   return neo4j.driver(
-    process.env.NEO4J_URI as string,
+    process.env.NEO4J_URI!,
     neo4j.auth.basic(
-      process.env.NEO4J_USERNAME as string,
-      process.env.NEO4J_PASSWORD as string
+      process.env.NEO4J_USERNAME!,
+      process.env.NEO4J_PASSWORD!
     )
   );
 }
@@ -16,20 +20,20 @@ export async function runCypher<T = any>(
   cypher: string,
   params: Record<string, any> = {}
 ): Promise<T[]> {
+  console.log("getting driver");
   const driver = getDriver();
+  console.log("driver", driver);
   const session: Session = driver.session();
+  console.log("session", session);
   try {
     const result = await session.run(cypher, params);
+    console.log("result", result);
     return result.records.map(record => record.toObject() as T);
   } finally {
     await session.close();
     await driver.close();
   }
 }
-
-let cachedSchema: string | null = null;
-let lastSchemaFetch = 0;
-const SCHEMA_CACHE_TTL = 1000 * 60 * 10; // 10 minutes
 
 export async function fetchAndCacheSchema(): Promise<string> {
   const now = Date.now();

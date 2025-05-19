@@ -34,13 +34,15 @@ export async function POST(req: NextRequest) {
       messageModifier: new SystemMessage(SYSTEM_TEMPLATE),
     });
 
+    console.log("messages", messages);
     const eventStream = await agent.streamEvents(
       { messages },
       { version: "v2" }
     );
 
+    console.log("eventStream", eventStream);
     const agentEventStream = await streamAgentEvents(eventStream);
-
+    console.log("agentEventStream", agentEventStream);
     return new Response(agentEventStream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",

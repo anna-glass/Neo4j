@@ -2,7 +2,7 @@ import { NodeProps, Handle, Position } from 'reactflow';
 
 export default function PartnerNode({ data, selected }: NodeProps) {
   const nodeSize = 108;
-  const imageSize = Math.round(nodeSize * 0.9);
+  const imageSize = Math.round(nodeSize * 0.8);
 
   return (
     <div

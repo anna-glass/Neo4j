@@ -7,7 +7,6 @@ import type { GraphData } from '../types/graph';
 // Dynamically import the BasicNvlWrapper with SSR disabled
 const BasicNvlWrapper = dynamic(
   () => import('@neo4j-nvl/react').then((mod) => mod.BasicNvlWrapper),
-  { ssr: false } // This prevents SSR rendering attempts
 );
 
 export default function Network() {
@@ -65,7 +64,7 @@ export default function Network() {
         rels={graph.relationships}
         nvlOptions={{
           layout: 'forceDirected',
-          initialZoom: 0.8,
+          initialZoom: 0.2,
           disableTelemetry: true
         }}
       />

@@ -120,35 +120,33 @@ function StickyToBottomContent(props: {
   return (
     <div
       ref={context.scrollRef}
-      style={{ width: "100%", height: "100%" }}
-      className={cn("grid grid-rows-[1fr,auto]", props.className)}
+      className={cn("grid grid-rows-[1fr,auto] h-full w-full", props.className)}
     >
-      <div ref={context.contentRef} className={props.contentClassName}>
-        {props.content}
-      </div>
+    <div ref={context.contentRef} className={props.contentClassName}>
+      {props.content}
+    </div>
 
-      {props.footer}
+    {props.footer}
     </div>
   );
 }
 
 function ChatLayout(props: { content: ReactNode; footer: ReactNode }) {
   return (
-    <StickToBottom>
-      <StickyToBottomContent
-        className="absolute inset-0"
-        contentClassName="py-8 px-2"
-        content={props.content}
-        footer={
-          <div className="sticky bottom-8 px-2">
-            <ScrollToBottom className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4" />
-            {props.footer}
-          </div>
-        }
-      />
-    </StickToBottom>
+    <StickyToBottomContent
+      className="h-full w-full" // No horizontal padding here!
+      contentClassName="py-8 px-4 md:px-8" // Padding only on content area
+      content={props.content}
+      footer={
+        <div className="sticky bottom-0 bg-white pt-2"> {/* bg-white for contrast */}
+          <ScrollToBottom className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4" />
+          <div className="px-4 md:px-8">{props.footer}</div> {/* Padding inside footer */}
+        </div>
+      }
+    />
   );
 }
+
 
 export function ExplorerChatWindow(props: {
   endpoint: string;

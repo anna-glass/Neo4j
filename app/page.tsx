@@ -1,5 +1,5 @@
 import OrgChartPage from './org-chart/page';
-import ChatOverlay from '@/components/ChatOverlay';
+import ChatPage from './chat/page';
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       </div>
       <div className="flex flex-col h-full">
         <OrgChartPage />
-        <ChatOverlay endpoint="/api/chat" />
+        <ChatPage />
       </div>
     </>
   );

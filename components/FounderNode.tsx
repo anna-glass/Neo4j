@@ -1,4 +1,4 @@
-import { NodeProps } from 'reactflow';
+import { NodeProps, Handle, Position } from 'reactflow';
 
 export default function FounderNode({ data, selected }: NodeProps) {
   return (
@@ -16,6 +16,13 @@ export default function FounderNode({ data, selected }: NodeProps) {
         position: 'relative',
       }}
     >
+      {/* Target handle (for incoming edges) */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
+        isConnectable={false}
+      />
       <img
         src={data.image}
         alt={data.name}
@@ -42,6 +49,13 @@ export default function FounderNode({ data, selected }: NodeProps) {
       >
         {data.name}
       </div>
+      {/* Source handle (for outgoing edges) */}
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
+        isConnectable={false}
+      />
     </div>
   );
 }

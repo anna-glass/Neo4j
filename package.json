@@ -35,6 +35,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dagre": "^0.8.5",
+    "elkjs": "^0.10.0",
     "langchain": "^0.3.26",
     "lucide-react": "^0.473.0",
     "neo4j-driver": "^5.28.1",

@@ -1,45 +1,41 @@
-import dagre from 'dagre';
+import ELK from 'elkjs';
 import { Node, Edge } from 'reactflow';
 
 const nodeWidth = 54;
 const nodeHeight = 54;
+const elk = new ELK();
 
-export function getLayoutedElements(
+export async function getLayoutedElements(
   nodes: Node[],
   edges: Edge[],
-  direction: 'TB' | 'LR' = 'TB'
-): { nodes: Node[]; edges: Edge[] } {
-  const dagreGraph = new dagre.graphlib.Graph();
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({
-    rankdir: direction,
-    nodesep: 20,
-    ranksep: 40,
-  });
+): Promise<{ nodes: Node[]; edges: Edge[] }> {
+  const elkGraph = {
+    id: "root",
+    layoutOptions: { 'elk.algorithm': 'force' },
+    children: nodes.map(node => ({
+      id: node.id,
+      width: nodeWidth,
+      height: nodeHeight,
+    })),
+    edges: edges.map(edge => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target],
+    })),
+  };
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
+  const layout = await elk.layout(elkGraph);
 
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  const layoutedNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
+  const layoutedNodes = nodes.map(node => {
+    const layoutNode = layout.children?.find(n => n.id === node.id);
     return {
       ...node,
       position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        x: layoutNode?.x ?? 0,
+        y: layoutNode?.y ?? 0,
       },
-      // This is important for React Flow to not overwrite our positions
-      sourcePosition: direction === 'LR' ? 'right' : 'bottom',
-      targetPosition: direction === 'LR' ? 'left' : 'top',
     };
   });
 
-  return { nodes: layoutedNodes as Node[], edges };
+  return { nodes: layoutedNodes, edges };
 }

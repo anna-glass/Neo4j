@@ -13,7 +13,7 @@ import 'reactflow/dist/style.css';
 
 import FounderNode from './FounderNode';
 import PartnerNode from './PartnerNode';
-import { getLayoutedElements } from '@/utils/node-layout';
+import { getLayoutedElements } from '@/utils/node-layout'; // Should return a Promise
 
 const nodeTypes = {
   founder: FounderNode,
@@ -26,26 +26,26 @@ interface OrgChartProps {
 }
 
 export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) {
-  // Layout nodes and edges on mount or when data changes
-  const [{ nodes: layoutedNodes, edges: layoutedEdges }, setLayouted] = useState(() =>
-    getLayoutedElements(initialNodes, initialEdges, 'TB')
-  );
-
-  useEffect(() => {
-    setLayouted(getLayoutedElements(initialNodes, initialEdges, 'TB'));
-  }, [initialNodes, initialEdges]);
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  // Start with empty state; layout will populate it
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  // Sync nodes/edges state with layouted nodes/edges
+  // Layout nodes and edges whenever initialNodes/initialEdges change
   useEffect(() => {
-    setNodes(layoutedNodes);
-  }, [layoutedNodes, setNodes]);
-  useEffect(() => {
-    setEdges(layoutedEdges);
-  }, [layoutedEdges, setEdges]);
+    let cancelled = false;
+    (async () => {
+      const { nodes: layoutedNodes, edges: layoutedEdges } =
+        await getLayoutedElements(initialNodes, initialEdges);
+      if (!cancelled) {
+        setNodes(layoutedNodes);
+        setEdges(layoutedEdges);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [initialNodes, initialEdges, setNodes, setEdges]);
 
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedNode(node);
@@ -61,8 +61,7 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
         edges={edges}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={{
-          style: { stroke: '#7fdbff', strokeWidth: 2 },
-          animated: true,
+          style: { stroke: 'black', strokeWidth: 2 },
         }}
         fitView
         onNodesChange={onNodesChange}

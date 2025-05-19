@@ -16,13 +16,36 @@ export default function PartnerNode({ data, selected }: NodeProps) {
         position: 'relative',
       }}
     >
-      {/* Target handle (for incoming edges) */}
+      {/* Handles on all sides */}
       <Handle
         type="target"
         position={Position.Top}
+        id="top"
         style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
         isConnectable={false}
       />
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="right"
+        style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
+        isConnectable={false}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
+        style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
+        isConnectable={false}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left"
+        style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
+        isConnectable={false}
+      />
+      {/* Node content */}
       <img
         src={data.image}
         alt={data.name}
@@ -49,13 +72,6 @@ export default function PartnerNode({ data, selected }: NodeProps) {
       >
         {data.name}
       </div>
-      {/* Source handle (for outgoing edges) */}
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{ background: 'transparent', border: 'none', width: 8, height: 8 }}
-        isConnectable={false}
-      />
     </div>
   );
 }

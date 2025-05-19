@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
 
     const userQuestion = messages[messages.length - 1]?.content ?? "";
 
+    console.log("userQuestion", userQuestion);
+
     // Initialize Neo4j graph connection
     const graph = await Neo4jGraph.initialize({
       url: process.env.NEO4J_URL!,
@@ -22,8 +24,11 @@ export async function POST(req: NextRequest) {
       password: process.env.NEO4J_PASSWORD!,
     });
 
+    console.log("graph", graph);
+
     // Get schema for prompt context
     const schema = await graph.getSchema();
+    console.log("schema", schema);
 
     // Compose prompt for Cypher generation
     const prompt = `
@@ -45,6 +50,8 @@ export async function POST(req: NextRequest) {
 
     // Compose answer (very basic for now)
     const answer = JSON.stringify(results, null, 2);
+
+    console.log("answer", answer);
 
     return new Response(answer, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },

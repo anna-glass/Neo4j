@@ -1,4 +1,4 @@
-import ELK from 'elkjs';
+import ELK from 'elkjs/lib/elk.bundled.js';
 import { Node, Edge } from 'reactflow';
 
 const nodeWidth = 54;

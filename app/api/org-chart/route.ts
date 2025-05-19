@@ -34,7 +34,6 @@ export async function GET(req: NextRequest) {
         id: row.rel.elementId,
         source: row.rel.startNodeElementId,
         target: row.rel.endNodeElementId,
-        label: row.rel.type,
         data: {
           companies: row.rel.properties.companies,
         },

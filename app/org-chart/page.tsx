@@ -1,5 +1,3 @@
-'use client';
-
 import OrgChart from '@/components/OrgChart';
 
 async function getOrgChartData() {

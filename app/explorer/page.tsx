@@ -1,8 +1,11 @@
 'use client';
 
 import { ExplorerChatWindow } from "@/components/ExplorerChatWindow";
-import Network from "../network/page";
+import dynamic from "next/dynamic";
 import { StickToBottom } from "use-stick-to-bottom";
+
+// Dynamically import the Network component with SSR disabled
+const Network = dynamic(() => import('@/components/Network'), { ssr: false });
 
 export default function ExplorerPage() {
   const InfoCard = (
@@ -33,5 +36,4 @@ export default function ExplorerPage() {
       </div>
     </div>
   );
-  
-} 
+}

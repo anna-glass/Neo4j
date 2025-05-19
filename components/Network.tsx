@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { NVL } from '@neo4j-nvl/base';
-import type { GraphData } from '../types/graph';
+import type { GraphData } from '../app/types/graph';
 
 type ClickedNodeInfo = {
   node: any;

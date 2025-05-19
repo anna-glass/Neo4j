@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
         data: {
           companies: row.rel.properties.companies,
         },
-        type: "smoothstep",
       };
       
     });

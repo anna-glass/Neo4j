@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { NVL } from '@neo4j-nvl/base';
+import { ClickInteraction } from '@neo4j-nvl/interaction-handlers';
 import type { GraphData } from '../app/types/graph';
 
 type ClickedNodeInfo = {
@@ -42,7 +43,7 @@ export default function Network() {
         nvlRef.current = null;
       }
 
-      // Create new NVL instance
+      // Create new NVL instance with interactions
       nvlRef.current = new NVL(
         containerRef.current,
         graph.nodes,
@@ -53,9 +54,10 @@ export default function Network() {
           disableTelemetry: true,
         }
       );
-
-      // Add nodeClick event handler
-      nvlRef.current.on('nodeClick', (node: any, event: any) => {
+      
+      // Attach click interaction handler
+      const clickInteraction = new ClickInteraction(nvlRef.current);
+      clickInteraction.updateCallback('onNodeClick', (node: any, event: any) => {
         const rect = containerRef.current!.getBoundingClientRect();
         const x = event.domEvent.clientX - rect.left;
         const y = event.domEvent.clientY - rect.top;

@@ -26,6 +26,9 @@ dependencies:
   '@neo4j-nvl/base':
     specifier: ^0.3.8
     version: 0.3.8(neo4j-driver@5.28.1)
+  '@neo4j-nvl/interaction-handlers':
+    specifier: ^0.3.8
+    version: 0.3.8(neo4j-driver@5.28.1)
   '@neo4j-nvl/react':
     specifier: ^0.3.8
     version: 0.3.8(neo4j-driver@5.28.1)

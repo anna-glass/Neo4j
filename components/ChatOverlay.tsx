@@ -1,8 +1,10 @@
-"use client";
-
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { LoaderCircle } from "lucide-react";
+import { ChatMessageBubble } from "./ChatMessageBubble"; 
+import type { Message } from "ai/react";
+
+type ChatMessage = Message & { sources?: any[] };
 
 export default function ChatOverlay({
   endpoint,
@@ -15,53 +17,58 @@ export default function ChatOverlay({
   emoji?: string;
   emptyStateComponent?: React.ReactNode;
 }) {
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    setMessages((msgs) => [...msgs, { role: "user", content: input }]);
+    const userId = crypto.randomUUID();
+    const userMsg: ChatMessage = { id: userId, role: "user", content: input };
+    setMessages((msgs) => [...msgs, userMsg]);
     setLoading(true);
 
-    // Send to your chat API
+    // Send to your chat API (use the same ID for the user message)
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [...messages, { role: "user", content: input }] }),
+      body: JSON.stringify({ messages: [...messages, userMsg] }),
     });
 
     if (!res.ok) {
       setLoading(false);
       setMessages((msgs) => [
         ...msgs,
-        { role: "assistant", content: "Sorry, something went wrong." },
+        { id: crypto.randomUUID(), role: "assistant", content: "Sorry, something went wrong." },
       ]);
       return;
     }
 
-    // Stream or parse response
-    const reader = res.body?.getReader();
+    // Generate assistant message ID once
+    const assistantId = crypto.randomUUID();
     let assistantMsg = "";
+    const reader = res.body?.getReader();
     if (reader) {
-      // Stream text (for edge runtime)
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         assistantMsg += new TextDecoder().decode(value);
-        setMessages((msgs) => [
-          // Remove previous assistant message if streaming
-          ...msgs.filter((m) => m.role !== "assistant"),
-          { role: "assistant", content: assistantMsg },
-        ]);
+        setMessages((msgs) => {
+          // Remove any previous assistant message with this id, then add/update
+          const msgsWithoutAssistant = msgs.filter((m) => m.id !== assistantId);
+          return [
+            ...msgsWithoutAssistant,
+            { id: assistantId, role: "assistant", content: assistantMsg },
+          ];
+        });
       }
     } else {
       const data = await res.text();
       assistantMsg = data;
       setMessages((msgs) => [
         ...msgs,
-        { role: "assistant", content: assistantMsg },
+        { id: assistantId, role: "assistant", content: assistantMsg },
       ]);
     }
     setInput("");
@@ -73,20 +80,13 @@ export default function ChatOverlay({
       <div className="flex-1 overflow-y-auto p-4 space-y-2" style={{ maxHeight: 400 }}>
         {messages.length === 0
           ? emptyStateComponent
-          : messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`p-2 rounded ${
-                  msg.role === "user"
-                    ? "bg-blue-100 self-end text-right"
-                    : "bg-gray-100 self-start text-left flex items-center gap-1"
-                }`}
-              >
-                {msg.role === "assistant" && (
-                  <span className="text-xl" aria-label="AI">{emoji}</span>
-                )}
-                {msg.content}
-              </div>
+          : messages.map((msg) => (
+              <ChatMessageBubble
+                key={msg.id}
+                message={msg}
+                aiEmoji={emoji}
+                sources={msg.sources || []}
+              />
             ))}
       </div>
       <form onSubmit={handleSubmit} className="flex border-t">

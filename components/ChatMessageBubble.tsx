@@ -4,7 +4,7 @@ import type { Message } from "ai/react";
 export function ChatMessageBubble(props: {
   message: Message;
   aiEmoji?: string;
-  sources: any[];
+  sources?: any[];
 }) {
   const { message, aiEmoji, sources } = props;
 
@@ -23,7 +23,7 @@ export function ChatMessageBubble(props: {
           role="img"
           aria-label="AI"
         >
-          {aiEmoji || "🤖"}
+          {aiEmoji}
         </div>
       )}
 

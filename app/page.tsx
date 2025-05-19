@@ -1,5 +1,16 @@
-import ExplorerPage from './explorer/page';
+import OrgChartPage from './org-chart/page';
 
 export default function Home() {
-  return <ExplorerPage />;
+  return (
+    <>
+      <div className="p-4 bg-secondary/50 rounded-md">
+        <p className="mb-2">
+          Hey, this is Slate! Check out this demo of our product with YC data - ask me anything about YC founders, partners, or connections!
+        </p>
+      </div>
+      <div className="flex flex-col h-full">
+        <OrgChartPage />
+      </div>
+    </>
+  );
 }

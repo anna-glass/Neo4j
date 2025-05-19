@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { NVL } from '@neo4j-nvl/base';
 import { ClickInteraction } from '@neo4j-nvl/interaction-handlers';
-import type { GraphData } from '../app/types/graph';
+import type { GraphData } from '../types/graph';
 
 type ClickedNodeInfo = {
   node: any;

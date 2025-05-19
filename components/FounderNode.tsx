@@ -63,8 +63,8 @@ export default function FounderNode({ data, selected }: NodeProps) {
         src={data.image}
         alt={data.name}
         style={{
-          width: 24,
-          height: 24,
+          width: 48,
+          height: 48,
           borderRadius: 6,
           objectFit: 'cover',
           marginBottom: 2,

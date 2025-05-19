@@ -62,7 +62,7 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
         nodeTypes={nodeTypes}
         defaultEdgeOptions={{
           type: 'straight',
-          style: { stroke: '#CBCBCB', strokeWidth: 2 },
+          style: { stroke: '#black', strokeWidth: 2 },
         }}
         fitView
         onNodesChange={onNodesChange}

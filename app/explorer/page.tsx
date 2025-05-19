@@ -8,7 +8,7 @@ export default function ExplorerPage() {
   const InfoCard = (
     <div className="p-4 bg-secondary/50 rounded-md">
       <p className="mb-2">
-        Hi, I'm Slate! This is a demo of our product with YC data - ask me anything about founders and partners (even latest insights from podcasts or Twitter!)
+        Hey, this is Slate! Check out this demo of our product with YC data - ask me anything about YC founders, partners, or connections!
       </p>
     </div>
   );

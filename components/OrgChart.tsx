@@ -8,7 +8,6 @@ import ReactFlow, {
   useEdgesState,
   Node,
   Edge,
-  useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -48,14 +47,6 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
     setEdges(layoutedEdges);
   }, [layoutedEdges, setEdges]);
 
-  // Auto-fit to screen after nodes/edges update
-  const { fitView } = useReactFlow();
-  useEffect(() => {
-    if (nodes.length > 0) {
-      fitView({ padding: 0.05 }); // Lower padding for tighter fit
-    }
-  }, [nodes, edges, fitView]);
-
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedNode(node);
   }, []);
@@ -71,13 +62,12 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
           animated: true,
         }}
         fitView
-        fitViewOptions={{ padding: 0.05 }}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
       >
         <Background color="#eaf6fb" gap={20} />
-        <Controls showFitView />
+        <Controls />
       </ReactFlow>
       {selectedNode && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

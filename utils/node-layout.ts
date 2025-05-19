@@ -1,8 +1,8 @@
 import dagre from 'dagre';
 import { Node, Edge } from 'reactflow';
 
-const nodeWidth = 54;  // match your compact node size
-const nodeHeight = 54;
+const nodeWidth = 180;
+const nodeHeight = 80;
 
 export function getLayoutedElements(
   nodes: Node[],
@@ -11,11 +11,7 @@ export function getLayoutedElements(
 ): { nodes: Node[]; edges: Edge[] } {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({
-    rankdir: direction,
-    nodesep: 20,   // horizontal gap between nodes
-    ranksep: 40,   // vertical gap between layers
-  });
+  dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -35,6 +31,7 @@ export function getLayoutedElements(
         x: nodeWithPosition.x - nodeWidth / 2,
         y: nodeWithPosition.y - nodeHeight / 2,
       },
+      // This is important for React Flow to not overwrite our positions
       sourcePosition: direction === 'LR' ? 'right' : 'bottom',
       targetPosition: direction === 'LR' ? 'left' : 'top',
     };

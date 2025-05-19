@@ -15,11 +15,15 @@ export async function POST(req: NextRequest) {
 
     const userQuestion = messages[messages.length - 1]?.content ?? "";
     console.log("userQuestion", userQuestion);
+
     // Fetch and cache schema for prompt context
     let schema: string;
     try {
+      console.log("fetching schema");
       schema = await fetchAndCacheSchema();
+      console.log("schema fetched");
     } catch (schemaError) {
+      console.error("Error fetching schema:", schemaError);
       return NextResponse.json(
         { error: (schemaError as Error).message },
         { status: 500 }

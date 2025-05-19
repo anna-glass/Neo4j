@@ -1,3 +1,5 @@
+
+'use client';
 import OrgChart from '@/components/OrgChart';
 import { ReactFlowProvider } from 'reactflow';
 async function getOrgChartData() {

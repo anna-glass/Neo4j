@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Button } from "./Button";
 import { LoaderCircle } from "lucide-react";
-import { ChatMessageBubble } from "./ChatMessageBubble"; 
-import type { Message } from "ai/react";
+import { ChatMessageBubble } from "./ChatMessageBubble";
+import { Message as UIMessage } from "ai/react";
 
-type ChatMessage = Message & { sources?: any[] };
+type ChatMessage = UIMessage & { sources?: any[] };
 
 export default function ChatOverlay({
   endpoint,
@@ -52,6 +52,7 @@ export default function ChatOverlay({
     let assistantMsg = "";
     const reader = res.body?.getReader();
     if (reader) {
+      // Streaming response
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -66,6 +67,7 @@ export default function ChatOverlay({
         });
       }
     } else {
+      // Non-streaming response
       const data = await res.text();
       assistantMsg = data;
       setMessages((msgs) => [

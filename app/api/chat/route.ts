@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Message as VercelChatMessage } from "ai";
-import { convertVercelMessageToLangChainMessage } from "@/lib/convert-message"
+import { Message as UIMessage } from "ai/react";
+import { UIToLangChainMessage } from "@/lib/convert-message";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { SystemMessage } from "@langchain/core/messages";
@@ -14,13 +14,13 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // only user/assistant messages
+    // Only user/assistant messages, convert to langchain
     const messages = (body.messages ?? [])
       .filter(
-        (m: VercelChatMessage) =>
+        (m: UIMessage) =>
           m.role === "user" || m.role === "assistant"
       )
-      .map(convertVercelMessageToLangChainMessage);
+      .map(UIToLangChainMessage);
 
     const chat = new ChatOpenAI({
       model: "gpt-4o-mini",
@@ -34,15 +34,13 @@ export async function POST(req: NextRequest) {
       messageModifier: new SystemMessage(SYSTEM_TEMPLATE),
     });
 
-    console.log("messages", messages);
     const eventStream = await agent.streamEvents(
       { messages },
       { version: "v2" }
     );
 
-    console.log("eventStream", eventStream);
     const agentEventStream = await streamAgentEvents(eventStream);
-    console.log("agentEventStream", agentEventStream);
+
     return new Response(agentEventStream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",

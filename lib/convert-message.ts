@@ -1,4 +1,4 @@
-import { Message as VercelChatMessage } from "ai";
+import { Message as UIMessage } from "ai/react";
 import {
   AIMessage,
   BaseMessage,
@@ -8,8 +8,7 @@ import {
   isHumanMessage,
 } from "@langchain/core/messages";
 
-// convert Vercel message to LangChain message
-export const convertVercelMessageToLangChainMessage = (message: VercelChatMessage) => {
+export const UIToLangChainMessage = (message: UIMessage) => {
   if (message.role === "user") {
     return new HumanMessage(message.content);
   } else if (message.role === "assistant") {
@@ -19,22 +18,27 @@ export const convertVercelMessageToLangChainMessage = (message: VercelChatMessag
   }
 };
 
-// convert LangChain message to Vercel message
-export const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
+export const LangChainToUIMessage = (message: BaseMessage) => {
+  const id = (message as any).id;
+
   if (isHumanMessage(message)) {
-    return { content: message.content, role: "user" };
+    return id
+      ? { id, content: message.content, role: "user" } as UIMessage
+      : { content: message.content, role: "user" } as UIMessage;
   } else if (isAIMessage(message)) {
     const aiMessage = message as AIMessage;
-    return {
+    const base = {
       content: aiMessage.content,
       role: "assistant",
-      tool_calls: aiMessage.tool_calls,
+      ...(aiMessage.tool_calls ? { tool_calls: aiMessage.tool_calls } : {}),
     };
+    return id ? { id, ...base } as UIMessage : base as UIMessage;
   } else {
     const baseMsg = message as BaseMessage;
-    return { 
-      content: baseMsg.content, 
-      role: baseMsg._getType() 
+    const base = {
+      content: baseMsg.content,
+      role: baseMsg._getType(),
     };
+    return id ? { id, ...base } as UIMessage : base as UIMessage;
   }
-}; 
+};

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage } from "ai";
-import { convertVercelMessageToLangChainMessage } from "../../utils/messageConversion";
+import { convertVercelMessageToLangChainMessage } from "@/lib/convert-message"
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { SystemMessage } from "@langchain/core/messages";

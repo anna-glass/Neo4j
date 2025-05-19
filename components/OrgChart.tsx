@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -25,9 +25,18 @@ interface OrgChartProps {
 }
 
 export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) {
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
+  // Use state hooks
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+
+  // Sync with props if they change (e.g. after fetch)
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
 
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedNode(node);
@@ -49,7 +58,7 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
       </ReactFlow>
       {selectedNode && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg min-w-[300px]">
+          <div className="bg-white p-6 rounded shadow-lg min-w-[300px] relative">
             <button
               className="absolute top-2 right-2 text-gray-500"
               onClick={() => setSelectedNode(null)}

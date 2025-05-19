@@ -16,23 +16,6 @@ export default function RootLayout({
       <head>
         <title>Slate - YC Network Demo</title>
         <link rel="shortcut icon" href="/images/favicon.ico" />
-        <meta
-          name="description"
-          content="Slate - Discover insights and connections within the YC network"
-        />
-        <meta property="og:title" content="Slate - YC Network Demo" />
-        <meta
-          property="og:description"
-          content="Slate - Discover insights and connections within the YC network"
-        />
-        <meta property="og:image" content="/images/og-image.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Slate - YC Network Demo" />
-        <meta
-          name="twitter:description"
-          content="Slate - Discover insights and connections within the YC network"
-        />
-        <meta name="twitter:image" content="/images/og-image.png" />
       </head>
       <body className={publicSans.className}>
         <NuqsAdapter>

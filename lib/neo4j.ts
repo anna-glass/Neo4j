@@ -16,6 +16,7 @@ export async function runCypher<T = any>(
   cypher: string,
   params: Record<string, any> = {}
 ): Promise<T[]> {
+  console.log("Running cypher query:", cypher);
   const driver = getDriver();
   const session: Session = driver.session();
   try {

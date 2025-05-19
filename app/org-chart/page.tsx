@@ -1,5 +1,5 @@
 import OrgChart from '@/components/OrgChart';
-
+import { ReactFlowProvider } from 'reactflow';
 async function getOrgChartData() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL!}/api/org-chart`, {
     cache: 'no-store',
@@ -12,7 +12,9 @@ export default async function OrgChartPage() {
   const { nodes, edges } = await getOrgChartData();
   return (
     <div className="w-full h-[80vh]">
-      <OrgChart initialNodes={nodes} initialEdges={edges} />
+      <ReactFlowProvider>
+        <OrgChart initialNodes={nodes} initialEdges={edges} />
+      </ReactFlowProvider>
     </div>
   );
 }

@@ -23,6 +23,9 @@ dependencies:
   '@langchain/textsplitters':
     specifier: ^0.1.0
     version: 0.1.0(@langchain/core@0.3.56)
+  '@neo4j-nvl/base':
+    specifier: ^0.3.8
+    version: 0.3.8(neo4j-driver@5.28.1)
   '@neo4j-nvl/react':
     specifier: ^0.3.8
     version: 0.3.8(neo4j-driver@5.28.1)

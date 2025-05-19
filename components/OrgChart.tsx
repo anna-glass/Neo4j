@@ -11,13 +11,12 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-import FounderNode from './FounderNode';
-import PartnerNode from './PartnerNode';
 import { getLayoutedElements } from '@/utils/node-layout'; // Should return a Promise
+import Neo4jsNode from './Neo4jsNode';
 
 const nodeTypes = {
-  founder: FounderNode,
-  partner: PartnerNode,
+  founder: Neo4jsNode,
+  partner: Neo4jsNode,
 };
 
 interface OrgChartProps {

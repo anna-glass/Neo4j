@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Message as UIMessage } from "ai/react";
 import { UIToLangChainMessage } from "@/lib/convert-message";
 import { ChatOpenAI } from "@langchain/openai";
-import { Neo4jGraph } from "@langchain/community/graphs/neo4j_graph";
+import { runCypher, fetchAndCacheSchema } from "@/lib/neo4j";
 
 export const runtime = "edge";
 
@@ -14,46 +14,39 @@ export async function POST(req: NextRequest) {
       .map(UIToLangChainMessage);
 
     const userQuestion = messages[messages.length - 1]?.content ?? "";
-
     console.log("userQuestion", userQuestion);
-
-    // broken on initialization
-
-    // Initialize Neo4j graph connection
-    const graph = await Neo4jGraph.initialize({
-      url: process.env.NEO4J_URI!,
-      username: process.env.NEO4J_USERNAME!,
-      password: process.env.NEO4J_PASSWORD!,
-    });
-
-    console.log("graph", graph);
-
-    // Get schema for prompt context
-    const schema = await graph.getSchema();
+    // Fetch and cache schema for prompt context
+    let schema: string;
+    try {
+      schema = await fetchAndCacheSchema();
+    } catch (schemaError) {
+      return NextResponse.json(
+        { error: (schemaError as Error).message },
+        { status: 500 }
+      );
+    }
     console.log("schema", schema);
 
-    // Compose prompt for Cypher generation
     const prompt = `
-    You are an expert Cypher developer. Given this Neo4j schema:
+You are an expert Cypher developer for Neo4j.
+The database schema is:
+${schema}
 
-    ${schema}
-
-    Write a Cypher query for the following question, then answer it using the results:
-    "${userQuestion}"
-    `;
+Write a Cypher query for the following question, and then answer it using the results.
+Question: "${userQuestion}"
+`;
 
     // Get Cypher from LLM
     const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
     const cypherResponse = await llm.invoke(prompt);
     const cypher = cypherResponse.content.toString().trim();
 
-    // Run Cypher on Neo4j
-    const results = await graph.query(cypher);
+    // Run Cypher on Neo4j using your utility
+    const results = await runCypher(cypher);
+    console.log("results", results);
 
     // Compose answer (very basic for now)
     const answer = JSON.stringify(results, null, 2);
-
-    console.log("answer", answer);
 
     return new Response(answer, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },

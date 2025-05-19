@@ -17,9 +17,11 @@ export async function POST(req: NextRequest) {
 
     console.log("userQuestion", userQuestion);
 
+    // broken on initialization
+
     // Initialize Neo4j graph connection
     const graph = await Neo4jGraph.initialize({
-      url: process.env.NEO4J_URL!,
+      url: process.env.NEO4J_URI!,
       username: process.env.NEO4J_USERNAME!,
       password: process.env.NEO4J_PASSWORD!,
     });

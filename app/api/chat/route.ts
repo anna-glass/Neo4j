@@ -69,9 +69,9 @@ Examples:
 - "Who are the founders of the company called 'Den'?"
     MATCH (f:Founder)-[:FOUNDER_OF]->(c:Company {name: "Den"})
     RETURN f.name AS founder_name
-- "Who could I talk to about what Dalton Caldwell is like?"
-    MATCH (p:Partner {name: "Dalton Caldwell"})<-[:SHARES_COMPANY_WITH]-(f:Founder)
-    RETURN f.name AS founder_name
+- "What can you tell me about Dalton Caldwell?"
+    MATCH (p:Partner {name: "Dalton Caldwell"})
+    RETURN p.name AS partner_name, p.bio AS bio
 
 `;
 

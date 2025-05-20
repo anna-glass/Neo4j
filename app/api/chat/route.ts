@@ -61,7 +61,7 @@ You are an assistant answering questions about an organizational chart, based on
 Graph schema:
 - Node labels and properties:
   - Founder: name, image, company
-  - Partner: name, role, bio, image
+  - Partner: name, role, bio, image, youtube_videos
   - Company: name, primary_partner, short_description, image, tag, location, website, long_description
   - YoutubeVideo: name, host1, host2, host3, host4, summary
 

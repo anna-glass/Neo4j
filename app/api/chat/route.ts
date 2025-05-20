@@ -27,35 +27,6 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `
-You are an expert Cypher developer for Neo4j.
-The database schema is:
-${schema}
-
-Guidelines:
-- Only use node labels, relationship types, and properties that are present in the schema above.
-- If the question cannot be answered using ONLY the schema, respond politely that you could not answer the question.
-- Do NOT guess or invent any labels, relationships, or properties.
-
-Write a Cypher query for the following question, and output it as a \`\`\`cypher code block, with NO explanation or commentary.
-Question: "${userQuestion}"
-`;
-
-    // Get Cypher from LLM
-    const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
-    const cypherResponse = await llm.invoke(prompt);
-    const cypherRaw = cypherResponse.content.toString().trim();
-    const cypher = extractCypherFromResponse(cypherRaw);
-
-    // Run Cypher on Neo4j using your utility
-    let results;
-    try {
-      results = await runCypher(cypher);
-    } catch (err) {
-      console.error("Cypher execution error:", err);
-      return NextResponse.json({ error: String(err) }, { status: 500 });
-    }
-
-    const reasoningPrompt = `
 You are an assistant answering questions about an organizational chart, based on Neo4j database results.
 
 Graph schema:
@@ -80,11 +51,35 @@ Instructions:
 - Use only the schema above when interpreting the data and answering questions.
 - Answer the user's question in clear, natural language, summarizing the result.
 - Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
-- If the result says it couldn't answer the question or no data was found, politely explain that no data was found.
-- Do not repeat the question or include unnecessary details.
-- If the user asks anything about youtube videos or what someone has been talking about or hosted, run this cypher query with the name they give you: MATCH (p:Partner {name: "Partner Name"})<-[:HAS_HOST]-(v:YoutubeVideo)
-RETURN v
+- If the result says it couldn't answer the question or no data was found, just say "Could not find anything on that, sorry!"
 
+User question:
+${userQuestion}
+`;
+
+    // Get Cypher from LLM
+    const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0.3 });
+    const cypherResponse = await llm.invoke(prompt);
+    const cypherRaw = cypherResponse.content.toString().trim();
+    const cypher = extractCypherFromResponse(cypherRaw);
+
+    // Run Cypher on Neo4j using your utility
+    let results;
+    try {
+      results = await runCypher(cypher);
+    } catch (err) {
+      console.error("Cypher execution error:", err);
+      return NextResponse.json({ error: String(err) }, { status: 500 });
+    }
+
+    const reasoningPrompt = `
+You are an assistant answering questions about an organizational chart, based on Neo4j database results.
+
+Instructions:
+- Use only the data provided in the JSON result below to answer the user's question.
+- Answer in clear, natural language, summarizing the result.
+- Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
+- If no relevant data was found, just say "Could not find anything on that, sorry!"
 
 User question:
 ${userQuestion}

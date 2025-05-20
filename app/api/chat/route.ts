@@ -72,7 +72,9 @@ Examples:
 - "What can you tell me about Dalton Caldwell?"
     MATCH (p:Partner {name: "Dalton Caldwell"})
     RETURN p.name AS partner_name, p.bio AS bio
-
+- "Who is Walled Latif's cofounder?
+    MATCH (p:Founder {name: "Walled Latif"})-[:COFOUNDER_AT]->(cofounder:Founder)
+    RETURN cofounder.name AS cofounder_name   
 `;
 
     // Get Cypher from LLM

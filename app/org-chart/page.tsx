@@ -11,7 +11,7 @@ async function getOrgChartData() {
 export default async function OrgChartPage() {
   const { nodes, edges } = await getOrgChartData();
   return (
-    <div className="w-full h-[80vh]">
+    <div className="w-full h-screen">
       <OrgChart initialNodes={nodes} initialEdges={edges} />
     </div>
   );

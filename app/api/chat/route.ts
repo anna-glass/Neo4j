@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `
-You are an assistant answering questions about an organizational chart, based on Neo4j database results.
+Write a Cypher query for Neo4j that answers the following user question: ${userQuestion}
+
+Below is the schema for the organizational chart database:
 
 Graph schema:
 - Node labels and properties:
@@ -48,13 +50,13 @@ Graph schema:
   - (Partner)-[:SHARED_VIDEO_WITH {videos: [video names]}]->(Partner)
 
 Instructions:
-- Use only the schema above when interpreting the data and answering questions.
-- Answer the user's question in clear, natural language, summarizing the result.
-- Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
-- If the result says it couldn't answer the question or no data was found, just say "Could not find anything on that, sorry!"
+- Only use the node labels, relationship types, and properties listed in the schema above.
+- Do NOT use any other labels, relationships, or properties.
+- Do NOT guess or invent any part of the schema.
+- Only write Cypher queries that read data (do not create, update, or delete).
+- Limit the maximum number of results to 10 unless the question requires otherwise.
+- Output ONLY the Cypher query as a code block, with NO explanation or commentary.
 
-User question:
-${userQuestion}
 `;
 
     // Get Cypher from LLM

@@ -55,9 +55,65 @@ Question: "${userQuestion}"
       return NextResponse.json({ error: String(err) }, { status: 500 });
     }
 
-    // Compose a reasoning prompt for the LLM
     const reasoningPrompt = `
     You are an assistant answering questions about an organizational chart, based on Neo4j database results.
+    
+    Here are some example question, query, and answer pairs:
+    
+    Example 1:
+    User question:
+    Who founded Example Corp?
+    Cypher query:
+    MATCH (p:Person)-[:FOUNDER_OF]->(c:Company {name: "Example Corp"}) RETURN p.name
+    Raw database result (as JSON):
+    [
+      { "p.name": "Alice Smith" }
+    ]
+    Answer:
+    Alice Smith founded Example Corp, which is a company that makes widgets.
+    
+    Example 2:
+    User question:
+    Who are Alice Smith's cofounders?
+    Cypher query:
+    MATCH (p1:Person {name: "Alice Smith"})-[:COFOUNDER_AT]->(c:Company)<-[:COFOUNDER_AT]-(p2:Person)
+    RETURN p2.name, c.name
+    Raw database result (as JSON):
+    [
+      { "p2.name": "Bob Lee", "c.name": "Acme Inc." },
+      { "p2.name": "Carol Jones", "c.name": "Acme Inc." }
+    ]
+    Answer:
+    Alice Smith's cofounders at Acme Inc. are Bob Lee and Carol Jones.
+
+    Example 3:
+    User question:
+    Who are the partners at YC?
+    Cypher query:
+    MATCH (p:Partner) RETURN p.name
+    Raw database result (as JSON):
+    [
+      { "p.name": "Alice Smith" },
+      { "p.name": "Bob Lee" },
+      { "p.name": "Carol Jones" }
+    ]
+    Answer:
+    The partners at YC are Alice Smith, Bob Lee, and Carol Jones.
+
+    Example 4:
+    User question:
+    Which companies is Garry Tan a partner for?
+    Cypher query:
+    MATCH (p:Person {name: "Garry Tan"})<-[:HAS_PARTNER]-(c:Company) RETURN c.name
+    Raw database result (as JSON):
+    [
+      { "c.name": "Acme Inc." },
+      { "c.name": "Beta LLC" }
+    ]
+    Answer:
+    Garry Tan is a primary partner for Acme Inc. and Beta LLC.
+    
+    Now, answer the user's question below in the same style—concise, factual, and no unnecessary details.
     
     User question:
     ${userQuestion}
@@ -68,11 +124,9 @@ Question: "${userQuestion}"
     Raw database result (as JSON):
     ${JSON.stringify(results, null, 2)}
     
-    Please answer the user's question in clear, natural language, summarizing the result.
-    Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
-    If the result says something like it couldn't answer the question or find any data, politely explain that no data was found.
-    Do not repeat the question or include unnecessary details.
+    Answer (concise, max 2 sentences):
     `;
+    
     
 
     // Get the final answer from the LLM

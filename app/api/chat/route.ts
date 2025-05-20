@@ -82,6 +82,9 @@ Instructions:
 - Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
 - If the result says it couldn't answer the question or no data was found, politely explain that no data was found.
 - Do not repeat the question or include unnecessary details.
+- If the user asks anything about youtube videos or what someone has been talking about or hosted, run this cypher query with the name they give you: MATCH (p:Partner {name: "Partner Name"})<-[:HAS_HOST]-(v:YoutubeVideo)
+RETURN v
+
 
 User question:
 ${userQuestion}

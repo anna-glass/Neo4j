@@ -56,94 +56,38 @@ Question: "${userQuestion}"
     }
 
     const reasoningPrompt = `
-    You are an assistant answering questions about an organizational chart, based on Neo4j database results.
-    
-    Here are some example question, query, and answer pairs:
-    
-    Example 1:
-    User question:
-    Who founded Example Corp?
-    Cypher query:
-    MATCH (p:Founder)-[:FOUNDER_OF]->(c:Company {name: "Example Corp"}) RETURN p.name
-    Raw database result (as JSON):
-    [
-      { "p.name": "Alice Smith" }
-    ]
-    Answer:
-    Alice Smith founded Example Corp, which is a company that makes widgets.
-    
-    Example 2:
-    User question:
-    Who are Alice Smith's cofounders?
-    Cypher query:
-    MATCH (p1:Founder {name: "Alice Smith"})-[:COFOUNDER_AT]->(c:Company)<-[:COFOUNDER_AT]-(p2:Person)
-    RETURN p2.name, c.name
-    Raw database result (as JSON):
-    [
-      { "p2.name": "Bob Lee", "c.name": "Acme Inc." },
-      { "p2.name": "Carol Jones", "c.name": "Acme Inc." }
-    ]
-    Answer:
-    Alice Smith's cofounders at Acme Inc. are Bob Lee and Carol Jones.
+You are an assistant answering questions about an organizational chart, based on Neo4j database results.
 
-    Example 3:
-    User question:
-    Who are the partners at YC?
-    Cypher query:
-    MATCH (p:Partner) RETURN p.name
-    Raw database result (as JSON):
-    [
-      { "p.name": "Alice Smith" },
-      { "p.name": "Bob Lee" },
-      { "p.name": "Carol Jones" }
-    ]
-    Answer:
-    The partners at YC are Alice Smith, Bob Lee, and Carol Jones.
+Graph schema:
+- Node labels and properties:
+  - Founder: name, image, company
+  - Partner: name, role, bio, image
+  - Company: name, primary_partner, short_description, image, tag, location, website, long_description
 
-    Example 4:
-    User question:
-    Which companies is Garry Tan a primary partner for?
-    Cypher query:
-    MATCH (c:Company)-[:HAS_PARTNER]->(p:Partner {name: "Garry Tan"})
-RETURN c.name
+- Relationships:
+  - (Founder)-[:FOUNDER_OF]->(Company)
+  - (Company)-[:HAS_PARTNER]->(Partner)
+  - (Founder)-[:COFOUNDER_AT]->(Company)
 
-    Raw database result (as JSON):
-    [
-      { "c.name": "Acme Inc." },
-      { "c.name": "Beta LLC" }
-    ]
-    Answer:
-    Garry Tan is a primary partner for Acme Inc. and Beta LLC.
+Instructions:
+- Use only the schema above when interpreting the data and answering questions.
+- Answer the user's question in clear, natural language, summarizing the result.
+- Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
+- If the result says it couldn't answer the question or no data was found, politely explain that no data was found.
+- Do not repeat the question or include unnecessary details.
 
-    Example 5:
-    User question:
-    Which founders are connected to Garry Tan?
-    Cypher query:
-    MATCH (p:Founder)-[:FOUNDER_OF]->(c:Company)-[:HAS_PARTNER]->(p2:Partner {name: "Garry Tan"})
-RETURN p.name
+User question:
+${userQuestion}
 
-    Raw database result (as JSON):
-    [
-      { "p.name": "Alice Smith" },
-      { "p.name": "Bob Lee" }
-    ]
-    Answer:
-    Alice Smith and Bob Lee are founders of companies that Garry Tan is a primary partner for.
-    
-    Now, answer the user's question below in the same style—concise, factual, and no unnecessary details.
-    
-    User question:
-    ${userQuestion}
-    
-    Cypher query:
-    ${cypher}
-    
-    Raw database result (as JSON):
-    ${JSON.stringify(results, null, 2)}
-    
-    Answer (concise, max 2 sentences):
-    `;
-    
+Cypher query:
+${cypher}
+
+Raw database result (as JSON):
+${JSON.stringify(results, null, 2)}
+
+Answer (concise, max 2 sentences):
+`;
+
     
 
     // Get the final answer from the LLM

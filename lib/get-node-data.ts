@@ -17,6 +17,7 @@ export function getNodeData(node: any) {
           role: node.role,
           bio: node.bio,
           image: node.image,
+          youtube_videos: node.youtube_videos,
         },
       };
     }

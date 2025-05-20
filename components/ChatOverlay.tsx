@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
@@ -11,7 +11,7 @@ type ChatMessage = {
 
 export default function ChatOverlay({
   endpoint,
-  placeholder = "Ask me anything about the YC network..."
+  placeholder = "Ask me anything about the YC network...",
 }: {
   endpoint: string;
   placeholder?: string;
@@ -56,16 +56,19 @@ export default function ChatOverlay({
   return (
     <div
       className="fixed bottom-8 left-1/2 z-50"
-      style={{ transform: "translateX(-50%)" }}
+      style={{ transform: "translateX(-50%)", width: "75vw", maxWidth: 900 }}
     >
       <div
-        className="backdrop-blur-lg bg-white/30 border border-white/40 shadow-2xl rounded-2xl px-6 py-4 flex flex-col items-center"
+        className="backdrop-blur-lg bg-white/30 border border-white/40 shadow-2xl rounded-2xl px-8 py-6 flex flex-col items-center"
         style={{
-          minWidth: 320,
-          maxWidth: 400,
+          width: "100%",
           boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
         }}
       >
+        <div className="flex items-center mb-4">
+          <span className="text-2xl mr-2">🤖</span>
+          <span className="font-semibold text-gray-800">Ask the YC Network</span>
+        </div>
         {lastAssistantMsg && (
           <div className="w-full mb-3">
             <div className="bg-white/60 rounded-xl px-4 py-2 text-gray-900 shadow-inner border border-white/20">
@@ -75,7 +78,7 @@ export default function ChatOverlay({
         )}
         <form onSubmit={handleSubmit} className="flex w-full">
           <input
-            className="flex-1 px-3 py-2 rounded-l-xl border-none outline-none bg-white/40 text-gray-900 placeholder-gray-500"
+            className="flex-1 px-4 py-3 rounded-l-xl border-none outline-none bg-white/40 text-gray-900 placeholder-gray-500"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={placeholder}
@@ -87,7 +90,7 @@ export default function ChatOverlay({
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="bg-white/70 hover:bg-white/90 rounded-r-xl px-4 py-2 font-semibold text-gray-700 transition disabled:opacity-50"
+            className="bg-white/70 hover:bg-white/90 rounded-r-xl px-6 py-3 font-semibold text-gray-700 transition disabled:opacity-50"
             style={{ backdropFilter: "blur(8px)" }}
           >
             {loading ? <LoaderCircle className="animate-spin" /> : "Send"}

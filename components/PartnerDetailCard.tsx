@@ -21,7 +21,7 @@ export default function PartnerDetailCard({ open, onClose, person }: DetailCardP
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div
-        className="relative bg-white/40 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/30 p-8 flex flex-col items-center w-[360px] max-w-[90vw]"
+        className="relative bg-white/40 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/30 p-8 flex flex-col items-center w-1/2 max-w-[90vw]"
         style={{
           boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.25)",
         }}

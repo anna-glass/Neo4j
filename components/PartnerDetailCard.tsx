@@ -1,29 +1,17 @@
 import React from "react";
 
-type YoutubeVideo = {
-  name?: string;
-  summary?: string;
-};
-
 type DetailCardProps = {
-  open: boolean;
-  onClose: () => void;
-  person: {
-    name: string;
-    bio?: string;
-    image?: string;
-    role?: string;
-    youtube_videos?: YoutubeVideo[]; // <-- snake_case here!
-    [key: string]: any;
-  } | null;
-};
-
-// Helper to get first 2 sentences of a summary
-function getTwoSentences(text?: string): string {
-  if (!text) return "";
-  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
-  return sentences.slice(0, 2).join(" ").trim();
-}
+    open: boolean;
+    onClose: () => void;
+    person: {
+      name: string;
+      bio?: string;
+      image?: string;
+      role?: string;
+      youtube_videos?: string[];
+      [key: string]: any;
+    } | null;
+  };
 
 export default function PartnerDetailCard({ open, onClose, person }: DetailCardProps) {
   if (!open || !person) return null;
@@ -57,20 +45,12 @@ export default function PartnerDetailCard({ open, onClose, person }: DetailCardP
         {person.bio && (
           <p className="text-sm text-gray-800 text-center">{person.bio}</p>
         )}
-        {/* Talks about section */}
         {person.youtube_videos && person.youtube_videos.length > 0 && (
           <div className="mt-4 w-full">
             <div className="font-semibold text-gray-800 mb-1">Talks about:</div>
             <ul className="list-disc list-inside text-gray-700 text-sm space-y-2">
-              {person.youtube_videos.map((video, idx) =>
-                video.name ? (
-                  <li key={idx}>
-                    <strong>{video.name}</strong>
-                    {video.summary && (
-                      <>: {getTwoSentences(video.summary)}</>
-                    )}
-                  </li>
-                ) : null
+              {person.youtube_videos.map((name, idx) =>
+                name ? <li key={idx}><strong>{name}</strong></li> : null
               )}
             </ul>
           </div>

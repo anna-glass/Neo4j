@@ -3,7 +3,7 @@ MATCH (f:Founder)-[:FOUNDER_OF]->(c:Company)-[:HAS_PARTNER]->(p:Partner)
 OPTIONAL MATCH (v:YoutubeVideo)-[:HAS_HOST]->(p)
 WITH f, p, 
      collect(DISTINCT c.name) AS shared_companies, 
-     collect(DISTINCT {name: v.name, summary: v.summary}) AS youtube_videos
+     collect(DISTINCT v.name) AS youtube_videos
 RETURN 
   apoc.map.merge(properties(f), {labels: labels(f), elementId: elementId(f)}) AS person1, 
   apoc.map.merge(properties(p), {labels: labels(p), elementId: elementId(p), youtube_videos: youtube_videos}) AS person2,

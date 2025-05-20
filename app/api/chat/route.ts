@@ -57,6 +57,22 @@ Instructions:
 - Limit the maximum number of results to 10 unless the question requires otherwise.
 - Output ONLY the Cypher query as a code block, with NO explanation or commentary.
 
+
+Examples:
+- "What companies is Dalton Caldwell a primary partner of?"
+    MATCH (partner:Partner)<-[:HAS_PARTNER]-(company:Company)
+    WHERE company.primary_partner = 'Dalton Caldwell'
+    RETURN company.name
+- "What has Dalton Caldwell been discussing lately?"
+    MATCH (p:Partner {name: "Dalton Caldwell"})<-[:HAS_HOST]-(v:YoutubeVideo)
+    RETURN v.name AS video_title, v.summary AS summary
+- "Who are the founders of the company called 'Den'?"
+    MATCH (f:Founder)-[:FOUNDER_OF]->(c:Company {name: "Den"})
+    RETURN f.name AS founder_name
+- "Who could I talk to about what Dalton Caldwell is like?"
+    MATCH (p:Partner {name: "Dalton Caldwell"})<-[:SHARES_COMPANY_WITH]-(f:Founder)
+    RETURN f.name AS founder_name
+
 `;
 
     // Get Cypher from LLM

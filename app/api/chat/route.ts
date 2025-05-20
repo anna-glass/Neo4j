@@ -64,6 +64,7 @@ Instructions:
     const cypherResponse = await llm.invoke(prompt);
     const cypherRaw = cypherResponse.content.toString().trim();
     const cypher = extractCypherFromResponse(cypherRaw);
+    console.log("cypher", cypher);
 
     // Run Cypher on Neo4j using your utility
     let results;

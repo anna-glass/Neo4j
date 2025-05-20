@@ -63,11 +63,13 @@ Graph schema:
   - Founder: name, image, company
   - Partner: name, role, bio, image
   - Company: name, primary_partner, short_description, image, tag, location, website, long_description
+  - YoutubeVideo: name, host1, host2, host3, host4, summary
 
 - Relationships:
   - (Founder)-[:FOUNDER_OF]->(Company)
   - (Company)-[:HAS_PARTNER]->(Partner)
   - (Founder)-[:COFOUNDER_AT]->(Company)
+  - (YoutubeVideo)-[:HAS_HOST]->(Partner)
 
 Instructions:
 - Use only the schema above when interpreting the data and answering questions.
@@ -87,6 +89,7 @@ ${JSON.stringify(results, null, 2)}
 
 Answer (concise, max 2 sentences):
 `;
+
 
     // Get the final answer from the LLM
     const answerResponse = await llm.invoke(reasoningPrompt);

@@ -33,7 +33,7 @@ ${schema}
 
 Guidelines:
 - Only use node labels, relationship types, and properties that are present in the schema above.
-- If the question cannot be answered using ONLY the schema, respond with a Cypher comment: // Cannot answer with current schema.
+- If the question cannot be answered using ONLY the schema, respond politely that you could not answer the question.
 - Do NOT guess or invent any labels, relationships, or properties.
 
 Write a Cypher query for the following question, and output it as a \`\`\`cypher code block, with NO explanation or commentary.
@@ -57,19 +57,23 @@ Question: "${userQuestion}"
 
     // Compose a reasoning prompt for the LLM
     const reasoningPrompt = `
-You are an assistant answering questions about an organizational chart, based on Neo4j database results.
-
-User question:
-${userQuestion}
-
-Cypher query:
-${cypher}
-
-Raw database result (as JSON):
-${JSON.stringify(results, null, 2)}
-
-Please answer the user's question in clear, natural language, summarizing the result. If the result is empty, politely explain that no data was found.
-`;
+    You are an assistant answering questions about an organizational chart, based on Neo4j database results.
+    
+    User question:
+    ${userQuestion}
+    
+    Cypher query:
+    ${cypher}
+    
+    Raw database result (as JSON):
+    ${JSON.stringify(results, null, 2)}
+    
+    Please answer the user's question in clear, natural language, summarizing the result.
+    Be concise—limit your answer to 2 sentences and only state the key facts found in the data.
+    If the result says something like it couldn't answer the question or find any data, politely explain that no data was found.
+    Do not repeat the question or include unnecessary details.
+    `;
+    
 
     // Get the final answer from the LLM
     const answerResponse = await llm.invoke(reasoningPrompt);

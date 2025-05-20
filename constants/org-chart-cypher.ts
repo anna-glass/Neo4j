@@ -6,7 +6,7 @@ WITH f, p,
      collect(DISTINCT {name: v.name, summary: v.summary}) AS youtube_videos
 RETURN 
   apoc.map.merge(properties(f), {labels: labels(f), elementId: elementId(f)}) AS person1, 
-  apoc.map.merge(properties(p), {labels: labels(p), elementId: elementId(p), youtubeVideos: youtube_videos}) AS person2, 
+  apoc.map.merge(properties(p), {labels: labels(p), elementId: elementId(p), youtube_videos: youtube_videos}) AS person2,
   apoc.create.vRelationship(f, 'SHARES_COMPANY_WITH', {companies: shared_companies}, p) AS rel
 
 UNION ALL

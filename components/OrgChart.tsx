@@ -12,11 +12,19 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { getLayoutedElements } from '@/utils/node-layout'; // Should return a Promise
-import Neo4jsNode from './Neo4jsNode';
+import FounderNode from './FounderNode';
+import PartnerNode from './PartnerNode';
+import FounderDetailCard from './FounderDetailCard';
+import PartnerDetailCard from './PartnerDetailCard';
 
 const nodeTypes = {
-  founder: Neo4jsNode,
-  partner: Neo4jsNode,
+  founder: FounderNode,
+  partner: PartnerNode,
+};
+
+const detailCardTypes = {
+  founder: FounderDetailCard,
+  partner: PartnerDetailCard,
 };
 
 interface OrgChartProps {
@@ -58,7 +66,7 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
         nodeTypes={nodeTypes}
         defaultEdgeOptions={{
           type: 'straight',
-          style: { stroke: '#black', strokeWidth: 2 },
+          style: { stroke: '#000', strokeWidth: 2 },
         }}
         fitView
         onNodesChange={onNodesChange}
@@ -68,33 +76,18 @@ export default function OrgChart({ initialNodes, initialEdges }: OrgChartProps) 
         <Background color="#eaf6fb" gap={20} />
         <Controls />
       </ReactFlow>
-      {selectedNode && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg min-w-[300px] relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500"
-              onClick={() => setSelectedNode(null)}
-            >
-              ✕
-            </button>
-            <img
-              src={selectedNode.data.image}
-              alt={selectedNode.data.name}
-              className="mx-auto w-20 h-20 rounded-full object-cover mb-2"
-            />
-            <h2 className="text-lg font-bold text-center">{selectedNode.data.name}</h2>
-            {selectedNode.data.title && (
-              <div className="text-center text-gray-500">{selectedNode.data.title}</div>
-            )}
-            {selectedNode.data.role && (
-              <div className="text-center text-gray-500">{selectedNode.data.role}</div>
-            )}
-            {selectedNode.data.bio && (
-              <div className="mt-2 text-center text-sm">{selectedNode.data.bio}</div>
-            )}
-          </div>
-        </div>
-      )}
+      {selectedNode && (() => {
+        const DetailCard =
+          detailCardTypes[selectedNode.type as keyof typeof detailCardTypes];
+        if (!DetailCard) return null;
+        return (
+          <DetailCard
+            open={!!selectedNode}
+            person={selectedNode.data}
+            onClose={() => setSelectedNode(null)}
+          />
+        );
+      })()}
     </>
   );
 }

@@ -6,6 +6,7 @@ export function getNodeData(node: any) {
         data: {
           name: node.name,
           image: node.image,
+          company: node.company,
         },
       };
     }

@@ -66,10 +66,15 @@ Graph schema:
   - YoutubeVideo: name, host1, host2, host3, host4, summary
 
 - Relationships:
+  // Physical (stored in Neo4j)
   - (Founder)-[:FOUNDER_OF]->(Company)
   - (Company)-[:HAS_PARTNER]->(Partner)
   - (Founder)-[:COFOUNDER_AT]->(Company)
   - (YoutubeVideo)-[:HAS_HOST]->(Partner)
+  // Virtual (already created in Cypher queries)
+  - (Founder)-[:SHARES_COMPANY_WITH {companies: [company names]}]->(Partner)
+  - (Founder)-[:COFOUNDER_AT {companies: [company names]}]->(Founder)
+  - (Partner)-[:SHARED_VIDEO_WITH {videos: [video names]}]->(Partner)
 
 Instructions:
 - Use only the schema above when interpreting the data and answering questions.

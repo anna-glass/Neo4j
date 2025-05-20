@@ -88,8 +88,6 @@ ${JSON.stringify(results, null, 2)}
 Answer (concise, max 2 sentences):
 `;
 
-    
-
     // Get the final answer from the LLM
     const answerResponse = await llm.invoke(reasoningPrompt);
     const answer = answerResponse.content.toString().trim();

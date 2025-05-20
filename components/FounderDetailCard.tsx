@@ -38,7 +38,6 @@ export default function FounderDetailCard({ open, onClose, person }: DetailCardP
         )}
         <h2 className="text-xl font-bold mb-1 text-gray-900">{person.name}</h2>
         {person.company && <div className="mb-2 text-gray-700">{person.company}</div>}
-        {/* Add more fields as needed */}
       </div>
     </div>
   );

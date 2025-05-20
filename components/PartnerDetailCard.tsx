@@ -8,6 +8,7 @@ type DetailCardProps = {
     bio?: string;
     image?: string;
     role?: string;
+    youtubeVideos?: string[];
     [key: string]: any;
   } | null;
 };
@@ -43,6 +44,17 @@ export default function PartnerDetailCard({ open, onClose, person }: DetailCardP
         )}
         {person.bio && (
           <p className="text-sm text-gray-800 text-center">{person.bio}</p>
+        )}
+        {/* Talks about section */}
+        {person.youtubeVideos && person.youtubeVideos.length > 0 && (
+          <div className="mt-4 w-full">
+            <div className="font-semibold text-gray-800 mb-1">Talks about:</div>
+            <ul className="list-disc list-inside text-gray-700 text-sm">
+              {person.youtubeVideos.map((video, idx) => (
+                <li key={idx}>{video}</li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>

@@ -1,9 +1,10 @@
 export const CYPHER = `
 MATCH (f:Founder)-[:FOUNDER_OF]->(c:Company)-[:HAS_PARTNER]->(p:Partner)
-WITH f, p, collect(c.name) AS shared_companies
+OPTIONAL MATCH (v:YoutubeVideo)-[:HAS_HOST]->(p)
+WITH f, p, collect(DISTINCT c.name) AS shared_companies, collect(DISTINCT v.name) AS youtube_videos
 RETURN 
   apoc.map.merge(properties(f), {labels: labels(f), elementId: elementId(f)}) AS person1, 
-  apoc.map.merge(properties(p), {labels: labels(p), elementId: elementId(p)}) AS person2, 
+  apoc.map.merge(properties(p), {labels: labels(p), elementId: elementId(p), youtubeVideos: youtube_videos}) AS person2, 
   apoc.create.vRelationship(f, 'SHARES_COMPANY_WITH', {companies: shared_companies}, p) AS rel
 
 UNION ALL
@@ -15,4 +16,5 @@ RETURN
   apoc.map.merge(properties(f1), {labels: labels(f1), elementId: elementId(f1)}) AS person1, 
   apoc.map.merge(properties(f2), {labels: labels(f2), elementId: elementId(f2)}) AS person2, 
   apoc.create.vRelationship(f1, 'COFOUNDER_AT', {companies: shared_companies}, f2) AS rel
+
 `;

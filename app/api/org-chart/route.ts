@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ nodes, edges });
   } catch (e: any) {
+    console.error("Error", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

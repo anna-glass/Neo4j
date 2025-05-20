@@ -64,7 +64,7 @@ Question: "${userQuestion}"
     User question:
     Who founded Example Corp?
     Cypher query:
-    MATCH (p:Person)-[:FOUNDER_OF]->(c:Company {name: "Example Corp"}) RETURN p.name
+    MATCH (p:Founder)-[:FOUNDER_OF]->(c:Company {name: "Example Corp"}) RETURN p.name
     Raw database result (as JSON):
     [
       { "p.name": "Alice Smith" }
@@ -76,7 +76,7 @@ Question: "${userQuestion}"
     User question:
     Who are Alice Smith's cofounders?
     Cypher query:
-    MATCH (p1:Person {name: "Alice Smith"})-[:COFOUNDER_AT]->(c:Company)<-[:COFOUNDER_AT]-(p2:Person)
+    MATCH (p1:Founder {name: "Alice Smith"})-[:COFOUNDER_AT]->(c:Company)<-[:COFOUNDER_AT]-(p2:Person)
     RETURN p2.name, c.name
     Raw database result (as JSON):
     [
@@ -102,9 +102,9 @@ Question: "${userQuestion}"
 
     Example 4:
     User question:
-    Which companies is Garry Tan a partner for?
+    Which companies is Garry Tan a primary partner for?
     Cypher query:
-    MATCH (p:Person {name: "Garry Tan"})<-[:HAS_PARTNER]-(c:Company) RETURN c.name
+    MATCH (p:Partner {name: "Garry Tan"})<-[:HAS_PARTNER]-(c:Company) RETURN c.name
     Raw database result (as JSON):
     [
       { "c.name": "Acme Inc." },
@@ -112,6 +112,19 @@ Question: "${userQuestion}"
     ]
     Answer:
     Garry Tan is a primary partner for Acme Inc. and Beta LLC.
+
+    Example 5:
+    User question:
+    Which founders are connected to Garry Tan?
+    Cypher query:
+    MATCH (p:Founder)-[:FOUNDER_OF]->(c:Company)<-[:HAS_PARTNER]-(p2:Partner {name: "Garry Tan"}) RETURN p.name
+    Raw database result (as JSON):
+    [
+      { "p.name": "Alice Smith" },
+      { "p.name": "Bob Lee" }
+    ]
+    Answer:
+    Alice Smith and Bob Lee are founders of companies that Garry Tan is a primary partner for.
     
     Now, answer the user's question below in the same style—concise, factual, and no unnecessary details.
     

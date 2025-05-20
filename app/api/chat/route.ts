@@ -104,7 +104,9 @@ Question: "${userQuestion}"
     User question:
     Which companies is Garry Tan a primary partner for?
     Cypher query:
-    MATCH (p:Partner {name: "Garry Tan"})<-[:HAS_PARTNER]-(c:Company) RETURN c.name
+    MATCH (c:Company)-[:HAS_PARTNER]->(p:Partner {name: "Garry Tan"})
+RETURN c.name
+
     Raw database result (as JSON):
     [
       { "c.name": "Acme Inc." },
@@ -117,7 +119,9 @@ Question: "${userQuestion}"
     User question:
     Which founders are connected to Garry Tan?
     Cypher query:
-    MATCH (p:Founder)-[:FOUNDER_OF]->(c:Company)<-[:HAS_PARTNER]-(p2:Partner {name: "Garry Tan"}) RETURN p.name
+    MATCH (p:Founder)-[:FOUNDER_OF]->(c:Company)-[:HAS_PARTNER]->(p2:Partner {name: "Garry Tan"})
+RETURN p.name
+
     Raw database result (as JSON):
     [
       { "p.name": "Alice Smith" },

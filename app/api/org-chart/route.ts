@@ -5,7 +5,9 @@ import { getNodeData } from "@/lib/get-node-data";
 
 export async function GET(req: NextRequest) {
   try {
+    console.log("Running Cypher query");
     const results = await runCypher(CYPHER);
+    console.log("results", results);
     const nodesMap = new Map();
     const edges = results.map((row: any, i: number) => {
 

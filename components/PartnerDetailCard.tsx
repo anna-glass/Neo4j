@@ -15,6 +15,8 @@ type DetailCardProps = {
 
 export default function PartnerDetailCard({ open, onClose, person }: DetailCardProps) {
   if (!open || !person) return null;
+    console.log(person);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">

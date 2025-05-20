@@ -65,10 +65,6 @@ export default function ChatOverlay({
           boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
         }}
       >
-        <div className="flex items-center mb-4">
-          <span className="text-2xl mr-2">🤖</span>
-          <span className="font-semibold text-gray-800">Ask the YC Network</span>
-        </div>
         {lastAssistantMsg && (
           <div className="w-full mb-3">
             <div className="bg-white/60 rounded-xl px-4 py-2 text-gray-900 shadow-inner border border-white/20">
